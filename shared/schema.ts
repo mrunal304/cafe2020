@@ -53,7 +53,10 @@ export const notifications = pgTable("notifications", {
 // === SCHEMAS ===
 
 export const insertUserSchema = createInsertSchema(users);
-export const insertQueueSchema = createInsertSchema(queueEntries).omit({ 
+export const insertQueueSchema = createInsertSchema(queueEntries, {
+  phoneNumber: z.string().regex(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"),
+  numberOfPeople: z.number().min(1, "Party size must be at least 1").max(10, "Party size cannot exceed 10")
+}).omit({ 
   id: true, 
   queueNumber: true, 
   createdAt: true, 
