@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import logoUrl from "@assets/image_1768618696361.png";
+import logoUrl from "@assets/logo_transparent.png";
 
 export function CustomerLayout({ children }: { children: ReactNode }) {
   return (

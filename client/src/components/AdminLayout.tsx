@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { LogOut, Users, History } from "lucide-react";
 import { useLogout, useUser } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import logoUrl from "@assets/image_1768618696361.png";
+import logoUrl from "@assets/logo_transparent.png";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
