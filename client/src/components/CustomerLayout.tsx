@@ -7,7 +7,7 @@ export function CustomerLayout({ children, hideLogo = false }: { children: React
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-orange-100/50 to-transparent pointer-events-none" />
       
-      <div className="w-full max-w-md z-10 h-full flex flex-col py-4 overflow-hidden">
+      <div className="w-full max-w-md z-10 h-full flex flex-col py-2 overflow-hidden">
         {/* Logo Header */}
         {!hideLogo && (
           <div className="flex flex-col items-center mb-6 flex-shrink-0">
@@ -22,13 +22,13 @@ export function CustomerLayout({ children, hideLogo = false }: { children: React
         )}
 
         {/* Main Content Card */}
-        <div className={`glass-card rounded-3xl ${hideLogo ? 'p-4' : 'p-6 md:p-8'} shadow-2xl ring-1 ring-black/5 flex-1 mb-20 overflow-visible`}>
+        <div className={`glass-card rounded-3xl ${hideLogo ? 'p-3' : 'p-6 md:p-8'} shadow-2xl ring-1 ring-black/5 flex-1 mb-16 overflow-visible`}>
           {children}
         </div>
 
         {/* Footer */}
         {!hideLogo && (
-          <p className="text-center text-stone-400 font-bold text-[10px] mt-4 uppercase tracking-widest opacity-60 flex-shrink-0">
+          <p className="text-center text-stone-400 font-bold text-[10px] mt-4 uppercase tracking-widest opacity-60 flex-shrink-0 pb-safe">
             &copy; {new Date().getFullYear()} Cafe 2020. Powered by ReserveGo
           </p>
         )}
