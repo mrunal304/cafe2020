@@ -1,29 +1,31 @@
-import { db } from "./db";
 import {
-  queueEntries,
-  users,
-  notifications,
+  MongoUser,
+  MongoQueueEntry,
+  MongoNotification,
+  type IUser,
+  type IQueueEntry,
+  type INotification
+} from "@shared/mongo-schema";
+import {
   type QueueEntry,
   type InsertQueueEntry,
   type User,
   type InsertUser,
   type Notification,
-  type UpdateQueueStatusRequest
 } from "@shared/schema";
-import { eq, desc, and, lt } from "drizzle-orm";
 
 export interface IStorage {
   // User/Admin
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
 
   // Queue
   createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry>;
-  getQueueEntry(id: number): Promise<QueueEntry | undefined>;
+  getQueueEntry(id: string): Promise<QueueEntry | undefined>;
   getQueueEntries(): Promise<QueueEntry[]>;
-  updateQueueStatus(id: number, status: string): Promise<QueueEntry>;
-  updateQueueEntry(id: number, updates: Partial<QueueEntry>): Promise<QueueEntry>;
+  updateQueueStatus(id: string, status: string): Promise<QueueEntry>;
+  updateQueueEntry(id: string, updates: Partial<QueueEntry>): Promise<QueueEntry>;
   
   // Expiry check
   getExpiredEntries(threshold: Date): Promise<QueueEntry[]>;
@@ -32,72 +34,124 @@ export interface IStorage {
   logNotification(notification: any): Promise<Notification>;
 }
 
-export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+export class MongoStorage implements IStorage {
+  private mapUser(user: IUser): User {
+    return {
+      id: user._id.toString(),
+      username: user.username,
+      password: user.password,
+      role: user.role,
+      createdAt: user.createdAt,
+    } as any;
+  }
+
+  private mapQueueEntry(entry: IQueueEntry): QueueEntry {
+    return {
+      id: entry._id.toString(),
+      name: entry.name,
+      phoneNumber: entry.phoneNumber,
+      numberOfPeople: entry.numberOfPeople,
+      queueNumber: entry.queueNumber,
+      status: entry.status,
+      notificationSent: entry.notificationSent,
+      notificationSentAt: entry.notificationSentAt,
+      notificationStatus: entry.notificationStatus,
+      calledAt: entry.calledAt,
+      responseDeadline: entry.responseDeadline,
+      respondedAt: entry.respondedAt,
+      responseType: entry.responseType,
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
+    } as any;
+  }
+
+  private mapNotification(notif: INotification): Notification {
+    return {
+      id: notif._id.toString(),
+      queueId: notif.queueId.toString(),
+      phoneNumber: notif.phoneNumber,
+      message: notif.message,
+      type: notif.type,
+      status: notif.status,
+      twilioSid: notif.twilioSid,
+      error: notif.error,
+      sentAt: notif.sentAt,
+    } as any;
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const user = await MongoUser.findById(id);
+    return user ? this.mapUser(user) : undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
+    const user = await MongoUser.findOne({ username });
+    return user ? this.mapUser(user) : undefined;
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db.insert(users).values(user).returning();
-    return newUser;
+    const newUser = await MongoUser.create({
+      ...user,
+      createdAt: new Date(),
+    });
+    return this.mapUser(newUser);
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    // Get last queue number
-    const lastEntry = await db.select().from(queueEntries).orderBy(desc(queueEntries.queueNumber)).limit(1);
-    const nextQueueNumber = lastEntry.length > 0 ? lastEntry[0].queueNumber + 1 : 1;
+    const lastEntry = await MongoQueueEntry.findOne().sort({ queueNumber: -1 });
+    const nextQueueNumber = lastEntry ? lastEntry.queueNumber + 1 : 1;
 
-    const [newEntry] = await db.insert(queueEntries).values({
+    const newEntry = await MongoQueueEntry.create({
       ...entry,
+      name: entry.name || undefined,
       queueNumber: nextQueueNumber,
       status: 'waiting'
-    }).returning();
-    return newEntry;
+    });
+    return this.mapQueueEntry(newEntry);
   }
 
-  async getQueueEntry(id: number): Promise<QueueEntry | undefined> {
-    const [entry] = await db.select().from(queueEntries).where(eq(queueEntries.id, id));
-    return entry;
+  async getQueueEntry(id: string): Promise<QueueEntry | undefined> {
+    const entry = await MongoQueueEntry.findById(id);
+    return entry ? this.mapQueueEntry(entry) : undefined;
   }
 
   async getQueueEntries(): Promise<QueueEntry[]> {
-    return await db.select().from(queueEntries).orderBy(desc(queueEntries.createdAt));
+    const entries = await MongoQueueEntry.find().sort({ createdAt: -1 });
+    return entries.map(e => this.mapQueueEntry(e));
   }
 
-  async updateQueueStatus(id: number, status: string): Promise<QueueEntry> {
-    const [updated] = await db.update(queueEntries)
-      .set({ status, updatedAt: new Date() })
-      .where(eq(queueEntries.id, id))
-      .returning();
-    return updated;
+  async updateQueueStatus(id: string, status: string): Promise<QueueEntry> {
+    const updated = await MongoQueueEntry.findByIdAndUpdate(
+      id,
+      { status, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!updated) throw new Error("Entry not found");
+    return this.mapQueueEntry(updated);
   }
 
-  async updateQueueEntry(id: number, updates: Partial<QueueEntry>): Promise<QueueEntry> {
-    const [updated] = await db.update(queueEntries)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(queueEntries.id, id))
-      .returning();
-    return updated;
+  async updateQueueEntry(id: string, updates: Partial<QueueEntry>): Promise<QueueEntry> {
+    const updated = await MongoQueueEntry.findByIdAndUpdate(
+      id,
+      { ...updates, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!updated) throw new Error("Entry not found");
+    return this.mapQueueEntry(updated);
   }
 
   async getExpiredEntries(threshold: Date): Promise<QueueEntry[]> {
-    return await db.select().from(queueEntries)
-      .where(and(
-        eq(queueEntries.status, 'called'),
-        lt(queueEntries.responseDeadline, threshold)
-      ));
+    const entries = await MongoQueueEntry.find({
+      status: 'called',
+      responseDeadline: { $lt: threshold }
+    });
+    return entries.map(e => this.mapQueueEntry(e));
   }
 
   async logNotification(notification: any): Promise<Notification> {
-    const [log] = await db.insert(notifications).values(notification).returning();
-    return log;
+    const log = await MongoNotification.create(notification);
+    return this.mapNotification(log);
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MongoStorage();

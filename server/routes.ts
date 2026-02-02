@@ -59,7 +59,7 @@ export async function registerRoutes(
   );
 
   passport.serializeUser((user: any, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
+  passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await storage.getUser(id);
       done(null, user);
@@ -111,20 +111,20 @@ export async function registerRoutes(
   });
 
   app.get(api.queue.get.path, async (req, res) => {
-    const entry = await storage.getQueueEntry(Number(req.params.id));
+    const entry = await storage.getQueueEntry(req.params.id);
     if (!entry) return res.status(404).json({ message: "Not found" });
     res.json(entry);
   });
 
   app.get(api.queue.status.path, async (req, res) => {
-    const entry = await storage.getQueueEntry(Number(req.params.id));
+    const entry = await storage.getQueueEntry(req.params.id);
     if (!entry) return res.status(404).json({ message: "Not found" });
     res.json(entry);
   });
 
   // CALL CUSTOMER
   app.post(api.queue.call.path, async (req, res) => {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     let entry = await storage.getQueueEntry(id);
     if (!entry) return res.status(404).json({ message: "Not found" });
 
@@ -174,7 +174,7 @@ export async function registerRoutes(
 
   // CUSTOMER ACCEPT
   app.post(api.queue.accept.path, async (req, res) => {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     let entry = await storage.getQueueEntry(id);
     if (!entry) return res.status(404).json({ message: "Not found" });
 
@@ -188,7 +188,7 @@ export async function registerRoutes(
 
   // CUSTOMER CANCEL
   app.post(api.queue.cancel.path, async (req, res) => {
-    const id = Number(req.params.id);
+    const id = req.params.id;
     let entry = await storage.getQueueEntry(id);
     if (!entry) return res.status(404).json({ message: "Not found" });
 
