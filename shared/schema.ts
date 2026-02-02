@@ -1,84 +1,65 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// === TABLE DEFINITIONS ===
-
-// Admin Users
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(), // Will be hashed
-  role: text("role").default("admin").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Queue Entries
-export const queueEntries = pgTable("queue_entries", {
-  id: serial("id").primaryKey(),
-  name: text("name").default("Guest"),
-  phoneNumber: text("phone_number").notNull(),
-  numberOfPeople: integer("number_of_people").notNull(),
-  queueNumber: integer("queue_number").notNull().unique(), // Auto-incremented in storage
-  status: text("status", { enum: ['waiting', 'called', 'confirmed', 'expired', 'cancelled', 'completed'] }).default('waiting').notNull(),
-  
-  // Notification tracking
-  notificationSent: boolean("notification_sent").default(false),
-  notificationSentAt: timestamp("notification_sent_at"),
-  notificationStatus: text("notification_status", { enum: ['pending', 'sent', 'failed'] }).default('pending'),
-  
-  // Timer and response tracking
-  calledAt: timestamp("called_at"),
-  responseDeadline: timestamp("response_deadline"),
-  respondedAt: timestamp("responded_at"),
-  responseType: text("response_type", { enum: ['accepted', 'cancelled', 'expired'] }),
-  
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Notification Logs
-export const notifications = pgTable("notifications", {
-  id: serial("id").primaryKey(),
-  queueId: integer("queue_id").references(() => queueEntries.id),
-  phoneNumber: text("phone_number").notNull(),
-  message: text("message").notNull(),
-  type: text("type", { enum: ['sms', 'call'] }).default('sms'),
-  status: text("status", { enum: ['sent', 'failed', 'pending'] }).notNull(),
-  twilioSid: text("twilio_sid"),
-  error: text("error"),
-  sentAt: timestamp("sent_at"),
-});
-
-// === SCHEMAS ===
-
-export const insertUserSchema = createInsertSchema(users);
-export const insertQueueSchema = createInsertSchema(queueEntries, {
-  phoneNumber: z.string().regex(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"),
-  numberOfPeople: z.number().min(1, "Party size must be at least 1").max(10, "Party size cannot exceed 10")
-}).omit({ 
-  id: true, 
-  queueNumber: true, 
-  createdAt: true, 
-  updatedAt: true,
-  calledAt: true,
-  responseDeadline: true,
-  respondedAt: true,
-  responseType: true,
-  notificationSent: true,
-  notificationSentAt: true,
-  notificationStatus: true
-});
+// NOTE: These types and schemas are maintained for frontend compatibility 
+// and validation, but data is stored in MongoDB via Mongoose.
 
 // === TYPES ===
 
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = {
+  id: string;
+  username: string;
+  password?: string;
+  role: string;
+  createdAt?: Date;
+};
 
-export type QueueEntry = typeof queueEntries.$inferSelect;
+export type QueueEntry = {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  numberOfPeople: number;
+  queueNumber: number;
+  status: 'waiting' | 'called' | 'confirmed' | 'expired' | 'cancelled' | 'completed';
+  notificationSent: boolean;
+  notificationSentAt?: Date;
+  notificationStatus: 'pending' | 'sent' | 'failed';
+  calledAt?: Date;
+  responseDeadline?: Date;
+  respondedAt?: Date;
+  responseType?: 'accepted' | 'cancelled' | 'expired';
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Notification = {
+  id: string;
+  queueId: string;
+  phoneNumber: string;
+  message: string;
+  type: 'sms' | 'call';
+  status: 'sent' | 'failed' | 'pending';
+  twilioSid?: string;
+  error?: string;
+  sentAt?: Date;
+};
+
+// === SCHEMAS ===
+
+// We'll define a simple zod schema for queue creation validation
+export const insertQueueSchema = z.object({
+  name: z.string().default("Guest"),
+  phoneNumber: z.string().regex(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"),
+  numberOfPeople: z.number().min(1, "Party size must be at least 1").max(10, "Party size cannot exceed 10")
+});
+
+export type InsertUser = {
+  username: string;
+  password?: string;
+  role: string;
+};
+
 export type InsertQueueEntry = z.infer<typeof insertQueueSchema>;
-
-export type Notification = typeof notifications.$inferSelect;
 
 // Request Types
 export type CreateQueueRequest = InsertQueueEntry;

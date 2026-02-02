@@ -49,7 +49,7 @@ export async function registerRoutes(
       try {
         const user = await storage.getUserByUsername(username);
         if (!user) return done(null, false);
-        const isValid = await comparePasswords(password, user.password);
+        const isValid = await comparePasswords(password, user.password as string);
         if (!isValid) return done(null, false);
         return done(null, user);
       } catch (err) {
