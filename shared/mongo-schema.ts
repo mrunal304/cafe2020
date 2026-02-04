@@ -31,6 +31,7 @@ export interface IQueueEntry extends Document {
   responseDeadline?: Date;
   respondedAt?: Date;
   responseType?: 'accepted' | 'cancelled' | 'expired';
+  message?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +61,7 @@ const QueueEntrySchema: Schema = new Schema({
     type: String, 
     enum: ['accepted', 'cancelled', 'expired'] 
   },
+  message: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
