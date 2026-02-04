@@ -238,8 +238,8 @@ export async function registerRoutes(
     const removedPosition = entry.position;
 
     const updated = await storage.updateQueueEntry(bookingId, {
-      status: 'left',
-      position: null
+      status: 'left' as any,
+      position: undefined
     });
 
     if (removedPosition) {
@@ -259,8 +259,8 @@ export async function registerRoutes(
     const removedPosition = entry.position;
 
     const updated = await storage.updateQueueEntry(bookingId, {
-      status: 'cancelled',
-      position: null
+      status: 'cancelled' as any,
+      position: undefined
     });
 
     if (removedPosition) {

@@ -19,7 +19,7 @@ export type QueueEntry = {
   phoneNumber: string;
   numberOfPeople: number;
   queueNumber: number;
-  status: 'waiting' | 'called' | 'confirmed' | 'expired' | 'cancelled' | 'completed';
+  status: 'waiting' | 'called' | 'confirmed' | 'expired' | 'cancelled' | 'completed' | 'left';
   notificationSent: boolean;
   notificationSentAt?: Date;
   notificationStatus: 'pending' | 'sent' | 'failed';

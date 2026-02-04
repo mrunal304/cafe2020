@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import { type QueueEntry, type CreateQueueRequest, type UpdateQueueStatusRequest } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 // Customer: Create a queue entry
 export function useCreateQueueEntry() {
