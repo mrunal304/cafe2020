@@ -1,0 +1,49 @@
+I have a restaurant queue management system with MongoDB backend. There's a critical bug where the customer panel shows the wrong queue number.
+
+PROBLEM:
+- Customer panel shows queue number #35 (which is the booking ID)
+- Admin panel correctly shows the customer at position #4
+- Customer should see their ACTUAL current queue position (#4), not the booking ID (#35)
+
+REQUIREMENTS:
+
+1. BACKEND CHANGES (MongoDB + Node.js/Express):
+   - Create a function to calculate real-time queue position
+   - Count all bookings with status "WAITING" that were created BEFORE the current customer's booking time on the same date
+   - Return the actual position number (not booking ID)
+   
+2. FRONTEND CHANGES (Customer Panel):
+   - Replace the booking ID display with actual queue position
+   - Show "Your queue number is #4" instead of "#35"
+   - Update to fetch and display real-time queue position
+   
+3. LOGIC TO IMPLEMENT:
+   - Queue position = COUNT of (bookings with status="WAITING" AND createdAt < currentBooking.createdAt AND date = currentBooking.date) + 1
+   - Recalculate position on every page load/refresh
+   - Optional: Add real-time updates when people ahead leave the queue
+
+CURRENT SCHEMA (assumed):
+```javascript
+Booking {
+  _id: ObjectId,
+  name: String,
+  phone: String,
+  numberOfPeople: Number,
+  status: String, // "WAITING", "SEATED", "COMPLETED"
+  date: Date,
+  createdAt: Date,
+  // other fields...
+}
+```
+
+FILES TO UPDATE:
+- Backend API route that returns queue information to customer
+- Customer panel component that displays queue number
+- Any relevant database query functions
+
+EXPECTED RESULT:
+- Customer with booking ID #35 should see "Your queue number is #4" because there are only 3 people waiting before them
+- Both customer panel and admin panel should show matching queue positions
+- Position should update dynamically as people leave the queue
+
+Please fix both backend and frontend code to show the correct current queue position instead of the booking ID.

@@ -121,7 +121,28 @@ export class MongoStorage implements IStorage {
     const entry = mongoose.Types.ObjectId.isValid(id) 
       ? await MongoQueueEntry.findById(id)
       : await MongoQueueEntry.findOne({ queueNumber: parseInt(id) || 0 });
-    return entry ? this.mapQueueEntry(entry) : undefined;
+    
+    if (!entry) return undefined;
+    
+    const mapped = this.mapQueueEntry(entry);
+    
+    // Calculate real-time position if it's waiting or called
+    if (mapped.status === 'waiting' || mapped.status === 'called') {
+      const position = await MongoQueueEntry.countDocuments({
+        status: { $in: ['waiting', 'called'] },
+        createdAt: { $lt: entry.createdAt },
+        // Same date check
+        $expr: {
+          $eq: [
+            { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            { $dateToString: { format: "%Y-%m-%d", date: entry.createdAt } }
+          ]
+        }
+      });
+      mapped.position = position + 1;
+    }
+    
+    return mapped;
   }
 
   async getQueueEntries(): Promise<QueueEntry[]> {
