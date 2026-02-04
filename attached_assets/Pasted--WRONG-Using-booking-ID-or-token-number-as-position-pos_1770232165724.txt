@@ -1,0 +1,58 @@
+// WRONG - Using booking ID or token number as position
+position = booking.bookingNumber // Shows #8, #7, etc.
+
+// CORRECT - Calculate sequential position
+const waitingBookings = await Booking.find({ status: 'WAITING' })
+  .sort({ createdAt: 1 });
+
+waitingBookings.forEach((booking, index) => {
+  booking.queuePosition = index + 1; // #1, #2, #3, #4, #5, #6
+});
+```
+
+---
+
+## PROMPT FOR REPLIT TO FIX ADMIN PANEL:
+```
+FIX ADMIN PANEL QUEUE SORTING BUG:
+
+PROBLEM:
+The admin panel queue is showing bookings in the wrong order and with wrong position numbers:
+- Customers who booked at 9:13 AM are showing AFTER customers who booked at 10 PM
+- Position numbers are inconsistent (#1, #2, #3, #4, #8, #7) instead of sequential
+- The queue is NOT sorted by booking time (createdAt)
+
+REQUIRED FIX:
+
+1. BACKEND - Fix the query sorting:
+```javascript
+// Get all waiting bookings sorted by creation time (earliest first)
+const waitingBookings = await Booking.find({ status: 'WAITING' })
+  .sort({ createdAt: 1 })  // Ascending order - oldest first
+  .exec();
+
+// Assign sequential position numbers
+const bookingsWithPosition = waitingBookings.map((booking, index) => ({
+  ...booking.toObject(),
+  queuePosition: index + 1  // #1, #2, #3, #4, #5, #6...
+}));
+```
+
+2. FRONTEND - Display the correct queuePosition:
+```javascript
+// Show queuePosition (NOT booking._id or bookingNumber)
+<div>#{queuePosition}</div>
+```
+
+3. LOGIC RULES:
+- Sort ALL waiting bookings by createdAt in ASCENDING order (oldest = first in queue)
+- Assign position numbers sequentially: 1, 2, 3, 4, 5, 6...
+- Position #1 should always be the customer who booked EARLIEST and is still waiting
+
+EXPECTED RESULT:
+- Customer who booked at 09:13 AM = Position #1 (currently showing as #7)
+- Customer who booked at 09:14 AM = Position #2 (currently showing as #8)
+- Customer who booked at 10:21 PM = Position #3 (currently showing correctly as #1)
+- And so on in chronological order...
+
+Fix the admin panel to show the correct queue order based on booking time.

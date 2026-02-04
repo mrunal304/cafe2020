@@ -146,8 +146,22 @@ export class MongoStorage implements IStorage {
   }
 
   async getQueueEntries(): Promise<QueueEntry[]> {
-    const entries = await MongoQueueEntry.find().sort({ createdAt: -1 });
-    return entries.map(e => this.mapQueueEntry(e));
+    const entries = await MongoQueueEntry.find({ 
+      status: { $in: ['waiting', 'called'] } 
+    }).sort({ createdAt: 1 });
+    
+    const mapped = entries.map((e, index) => {
+      const entry = this.mapQueueEntry(e);
+      entry.position = index + 1;
+      return entry;
+    });
+
+    // Also get non-active entries for history, but sorted by most recent
+    const inactive = await MongoQueueEntry.find({ 
+      status: { $nin: ['waiting', 'called'] } 
+    }).sort({ updatedAt: -1 });
+    
+    return [...mapped, ...inactive.map(e => this.mapQueueEntry(e))];
   }
 
   async updateQueueStatus(id: string, status: string): Promise<QueueEntry> {
