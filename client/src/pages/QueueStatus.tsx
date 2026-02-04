@@ -101,18 +101,6 @@ export default function QueueStatus() {
             Leave Queue
           </Button>
         </div>
-
-        {/* Action Buttons - Placed directly below within the flow for smaller screens, but styled for prominence */}
-        <div className="w-full flex mt-8 bg-white shadow-lg rounded-xl overflow-hidden border border-stone-100">
-          <button className="flex-1 flex items-center justify-center gap-2 py-4 font-black text-stone-800 border-r border-stone-100 hover:bg-stone-50 transition-colors uppercase tracking-tight text-sm">
-            <Share2 className="w-4 h-4" />
-            Share
-          </button>
-          <button className="flex-1 flex items-center justify-center gap-2 py-4 font-black text-white bg-[#FF9933] hover:bg-[#e68a2e] transition-colors uppercase tracking-tight text-sm">
-            <Navigation className="w-4 h-4" />
-            Direction
-          </button>
-        </div>
       </div>
     </CustomerLayout>
   );
