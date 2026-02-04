@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
-import { useQueueStatus } from "@/hooks/use-queue";
+import { useQueueStatus, useCancelBooking } from "@/hooks/use-queue";
 import { CustomerLayout } from "@/components/CustomerLayout";
 import { Button } from "@/components/ui/button";
-import { Loader2, Share2, Navigation, Check } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 
@@ -13,6 +13,18 @@ export default function QueueStatus() {
   const id = params?.id || "0";
   
   const { data: queue, isLoading, error } = useQueueStatus(id);
+  const { mutate: leaveQueue, isPending: isLeaving } = useCancelBooking();
+
+  const handleLeaveQueue = () => {
+    if (!queue) return;
+    if (confirm("Are you sure you want to leave the queue?")) {
+      leaveQueue(queue.id, {
+        onSuccess: () => {
+          setLocation("/");
+        }
+      });
+    }
+  };
 
   useEffect(() => {
     if (!queue) return;
@@ -96,9 +108,11 @@ export default function QueueStatus() {
           <p className="text-stone-500 font-bold text-xs mb-3 uppercase">Name: {queue.name}</p>
           <Button 
             variant="outline" 
+            onClick={handleLeaveQueue}
+            disabled={isLeaving}
             className="bg-white text-stone-900 border-stone-200 font-black px-8 h-10 rounded-xl shadow-sm hover:bg-stone-50 uppercase tracking-wide text-xs"
           >
-            Leave Queue
+            {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
           </Button>
         </div>
       </div>
