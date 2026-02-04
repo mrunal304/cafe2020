@@ -229,6 +229,48 @@ export async function registerRoutes(
     res.json(entry);
   });
 
+  // LEAVE QUEUE (USER SIDE)
+  app.post("/api/bookings/leave-queue", async (req, res) => {
+    const { bookingId } = req.body;
+    const entry = await storage.getQueueEntry(bookingId);
+    if (!entry) return res.status(404).json({ message: "Not found" });
+
+    const removedPosition = entry.position;
+
+    const updated = await storage.updateQueueEntry(bookingId, {
+      status: 'left',
+      position: null
+    });
+
+    if (removedPosition) {
+      // @ts-ignore
+      await storage.reorderQueue(removedPosition);
+    }
+
+    res.json(updated);
+  });
+
+  // CANCEL BOOKING (ADMIN SIDE)
+  app.post("/api/admin/bookings/cancel", async (req, res) => {
+    const { bookingId } = req.body;
+    const entry = await storage.getQueueEntry(bookingId);
+    if (!entry) return res.status(404).json({ message: "Not found" });
+
+    const removedPosition = entry.position;
+
+    const updated = await storage.updateQueueEntry(bookingId, {
+      status: 'cancelled',
+      position: null
+    });
+
+    if (removedPosition) {
+      // @ts-ignore
+      await storage.reorderQueue(removedPosition);
+    }
+
+    res.json(updated);
+  });
+
   // === SEED DATA ===
   if (process.env.NODE_ENV !== 'production') {
     const existing = await storage.getUserByUsername('admin');

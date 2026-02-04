@@ -69,7 +69,16 @@ export default function AdminDashboard() {
   };
 
   const handleStatus = (id: string, status: any) => {
-    updateStatus({ id, status });
+    if (status === 'cancelled') {
+      import("@/lib/queryClient").then(({ apiRequest, queryClient }) => {
+        apiRequest("POST", "/api/admin/bookings/cancel", { bookingId: id })
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["/api/queue"] });
+          });
+      });
+    } else {
+      updateStatus({ id, status });
+    }
   };
 
   const getBorderColor = (index: number) => {

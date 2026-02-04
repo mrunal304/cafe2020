@@ -1,0 +1,69 @@
+FIX: "Leave Queue" and "Cancel Booking" buttons stopped working after implementing queue reordering. Need to fix both.
+
+**PROBLEM:**
+- Leave Queue button (user side) - NOT working
+- Cancel Booking / Stop icon button (admin side) - NOT working
+- These worked before but broke after adding queue reordering code
+
+**REQUIRED FIX:**
+
+**1. Fix Leave Queue Button (User Side):**
+```javascript
+// Frontend: Check button onClick is working
+<button onClick={handleLeaveQueue}>Leave Queue</button>
+
+// Backend: Create/fix API endpoint
+router.post('/api/bookings/leave-queue', async (req, res) => {
+  const { bookingId } = req.body;
+  const booking = await Booking.findById(bookingId);
+  const removedPosition = booking.position;
+  
+  // Update status
+  await Booking.findByIdAndUpdate(bookingId, {
+    status: 'left',
+    position: null
+  });
+  
+  // Reorder queue
+  if (removedPosition) {
+    await reorderQueue(removedPosition);
+  }
+  
+  res.json({ success: true });
+});
+```
+
+**2. Fix Cancel Booking Button (Admin Side):**
+```javascript
+// Frontend: Check button onClick is working
+<button onClick={() => handleCancelBooking(booking._id)}>Cancel</button>
+
+// Backend: Create/fix API endpoint
+router.post('/api/admin/bookings/cancel', async (req, res) => {
+  const { bookingId } = req.body;
+  const booking = await Booking.findById(bookingId);
+  const removedPosition = booking.position;
+  
+  // Update status
+  await Booking.findByIdAndUpdate(bookingId, {
+    status: 'cancelled',
+    position: null
+  });
+  
+  // Reorder queue
+  if (removedPosition) {
+    await reorderQueue(removedPosition);
+  }
+  
+  res.json({ success: true });
+});
+```
+
+**3. Ensure reorderQueue function is accessible in both routes**
+
+**TESTING:**
+- User clicks "Leave Queue" → Status changes to "left" → Queue reorders
+- Admin clicks "Cancel" or stop icon (⊗) → Status changes to "cancelled" → Queue reorders
+- Verify positions update correctly in MongoDB and admin panel
+
+Please fix both buttons and ensure queue reordering works with them.

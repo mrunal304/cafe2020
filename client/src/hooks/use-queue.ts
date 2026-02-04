@@ -122,15 +122,12 @@ export function useCancelBooking() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const url = buildUrl(api.queue.cancel.path, { id });
-      const res = await fetch(url, { 
-        method: api.queue.cancel.method 
-      });
-      if (!res.ok) throw new Error("Failed to cancel");
-      return api.queue.cancel.responses[200].parse(await res.json());
+      const res = await apiRequest("POST", "/api/bookings/leave-queue", { bookingId: id });
+      return res.json();
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: [api.queue.status.path, id] });
+      queryClient.invalidateQueries({ queryKey: [api.queue.list.path] });
     },
   });
 }

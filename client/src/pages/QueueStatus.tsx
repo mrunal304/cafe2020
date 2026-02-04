@@ -33,10 +33,13 @@ export default function QueueStatus() {
 
   const confirmLeave = () => {
     if (!queue) return;
-    leaveQueue(queue.id, {
-      onSuccess: () => {
-        setLocation("/");
-      }
+    // @ts-ignore - Using the correct endpoint structure as requested
+    import("@/lib/queryClient").then(({ apiRequest, queryClient }) => {
+      apiRequest("POST", "/api/bookings/leave-queue", { bookingId: queue.id })
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/queue", queue.id] });
+          setLocation("/");
+        });
     });
   };
 
