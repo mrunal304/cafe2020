@@ -1,29 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQueueStatus, useCancelBooking } from "@/hooks/use-queue";
 import { CustomerLayout } from "@/components/CustomerLayout";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check } from "lucide-react";
-import { motion } from "framer-motion";
+import { Loader2, Check, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function QueueStatus() {
   const [, params] = useRoute("/queue/:id");
   const [, setLocation] = useLocation();
   const id = params?.id || "0";
+  const [showConfirm, setShowConfirm] = useState(false);
   
   const { data: queue, isLoading, error } = useQueueStatus(id);
   const { mutate: leaveQueue, isPending: isLeaving } = useCancelBooking();
 
   const handleLeaveQueue = () => {
     if (!queue) return;
-    if (confirm("Are you sure you want to leave the queue?")) {
-      leaveQueue(queue.id, {
-        onSuccess: () => {
-          setLocation("/");
-        }
-      });
-    }
+    setShowConfirm(true);
+  };
+
+  const confirmLeave = () => {
+    if (!queue) return;
+    leaveQueue(queue.id, {
+      onSuccess: () => {
+        setLocation("/");
+      }
+    });
   };
 
   useEffect(() => {
@@ -116,6 +130,31 @@ export default function QueueStatus() {
           </Button>
         </div>
       </div>
+
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent className="rounded-2xl border-none shadow-2xl max-w-[90vw] sm:max-w-md bg-white">
+          <AlertDialogHeader className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-2">
+              <AlertCircle className="w-6 h-6 text-red-500" />
+            </div>
+            <AlertDialogTitle className="text-xl font-black text-stone-900 tracking-tight">Leave Queue?</AlertDialogTitle>
+            <AlertDialogDescription className="text-stone-500 font-medium">
+              Are you sure you want to leave the queue? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex flex-row gap-3 mt-4">
+            <AlertDialogCancel className="flex-1 mt-0 bg-stone-100 hover:bg-stone-200 border-none text-stone-600 font-bold rounded-xl h-11">
+              Go Back
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmLeave}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white border-none font-bold rounded-xl h-11 shadow-sm shadow-red-200"
+            >
+              Leave Now
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </CustomerLayout>
   );
 }
