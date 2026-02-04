@@ -27,6 +27,7 @@ export interface IStorage {
   getQueueEntries(): Promise<QueueEntry[]>;
   updateQueueStatus(id: string, status: string): Promise<QueueEntry>;
   updateQueueEntry(id: string, updates: Partial<QueueEntry>): Promise<QueueEntry>;
+  reorderQueue(removedPosition: number): Promise<void>;
   
   // Expiry check
   getExpiredEntries(threshold: Date): Promise<QueueEntry[]>;
@@ -62,6 +63,7 @@ export class MongoStorage implements IStorage {
       respondedAt: entry.respondedAt,
       responseType: entry.responseType,
       message: entry.message,
+      position: entry.position,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     } as any;
@@ -100,13 +102,16 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const lastEntry = await MongoQueueEntry.findOne().sort({ queueNumber: -1 });
-    const nextQueueNumber = lastEntry ? lastEntry.queueNumber + 1 : 1;
+    const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 });
+    const nextPosition = lastEntry && lastEntry.position ? lastEntry.position + 1 : 1;
+    const lastQueueNumberEntry = await MongoQueueEntry.findOne().sort({ queueNumber: -1 });
+    const nextQueueNumber = lastQueueNumberEntry ? lastQueueNumberEntry.queueNumber + 1 : 1;
 
     const newEntry = await MongoQueueEntry.create({
       ...entry,
       name: entry.name || undefined,
       queueNumber: nextQueueNumber,
+      position: nextPosition,
       status: 'waiting'
     });
     return this.mapQueueEntry(newEntry);
@@ -142,6 +147,28 @@ export class MongoStorage implements IStorage {
     );
     if (!updated) throw new Error("Entry not found");
     return this.mapQueueEntry(updated);
+  }
+
+  async reorderQueue(removedPosition: number): Promise<void> {
+    console.log('=== Reordering Queue ===');
+    console.log('Removed position:', removedPosition);
+    
+    try {
+      const entriesToUpdate = await MongoQueueEntry.find({
+        status: 'waiting',
+        position: { $gt: removedPosition }
+      }).sort({ position: 1 });
+      
+      for (const entry of entriesToUpdate) {
+        if (entry.position) {
+          entry.position = entry.position - 1;
+          await entry.save();
+          console.log(`Updated ${entry.name}: Position moved to ${entry.position}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error reordering queue:', error);
+    }
   }
 
   async getExpiredEntries(threshold: Date): Promise<QueueEntry[]> {

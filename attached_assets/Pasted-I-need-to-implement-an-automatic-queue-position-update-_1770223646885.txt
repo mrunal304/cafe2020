@@ -1,0 +1,240 @@
+I need to implement an automatic queue position update feature. When someone leaves the queue, all people behind them should automatically move up in position.
+
+**REQUIREMENT:**
+
+**Current Scenario:**
+- Queue has 5 people: Position #1, #2, #3, #4, #5
+- Person at position #3 leaves the queue (cancels/removes their booking)
+- Currently: Positions remain #1, #2, #4, #5 (gap at #3)
+
+**Expected Behavior:**
+- Queue has 5 people: Position #1, #2, #3, #4, #5
+- Person at position #3 leaves the queue
+- Automatically: Person #4 becomes #3, Person #5 becomes #4
+- Result: Queue now has positions #1, #2, #3, #4 (no gaps)
+
+**IMPLEMENTATION REQUIRED:**
+
+**STEP 1 - Identify Queue Position Field:**
+
+1. Find the Booking/Queue model in MongoDB
+2. Check if there's a position field:
+```javascript
+   const bookingSchema = new mongoose.Schema({
+     customerName: String,
+     phone: String,
+     partySize: Number,
+     message: String,
+     status: String,
+     position: Number,  // ← Queue position field
+     createdAt: Date,
+     updatedAt: Date
+   });
+```
+
+3. If position field doesn't exist, ADD it:
+```javascript
+   position: {
+     type: Number,
+     default: null
+   }
+```
+
+**STEP 2 - Auto-assign Position When Joining Queue:**
+
+1. When a new booking is created or confirmed, assign them the next position:
+```javascript
+   // In the create/confirm booking API
+   const maxPosition = await Booking.findOne({ status: 'waiting' })
+     .sort({ position: -1 })
+     .select('position');
+   
+   const newPosition = maxPosition ? maxPosition.position + 1 : 1;
+   
+   const newBooking = await Booking.create({
+     customerName: req.body.customerName,
+     phone: req.body.phone,
+     partySize: req.body.partySize,
+     message: req.body.message,
+     status: 'waiting',
+     position: newPosition  // ← Assign position
+   });
+```
+
+**STEP 3 - Reorder Queue When Someone Leaves:**
+
+1. Create a function to reorder queue positions:
+```javascript
+   async function reorderQueue(removedPosition) {
+     console.log('=== Reordering Queue ===');
+     console.log('Removed position:', removedPosition);
+     
+     try {
+       // Get all bookings after the removed position
+       const bookingsToUpdate = await Booking.find({
+         status: 'waiting',
+         position: { $gt: removedPosition }
+       }).sort({ position: 1 });
+       
+       console.log('Bookings to update:', bookingsToUpdate.length);
+       
+       // Update each booking's position by moving up by 1
+       for (const booking of bookingsToUpdate) {
+         const oldPosition = booking.position;
+         const newPosition = oldPosition - 1;
+         
+         await Booking.updateOne(
+           { _id: booking._id },
+           { $set: { position: newPosition } }
+         );
+         
+         console.log(`Updated ${booking.customerName}: Position ${oldPosition} → ${newPosition}`);
+       }
+       
+       console.log('Queue reordered successfully');
+       return true;
+     } catch (error) {
+       console.error('Error reordering queue:', error);
+       return false;
+     }
+   }
+```
+
+**STEP 4 - Trigger Reordering When Booking is Cancelled/Removed:**
+
+1. Find the API route that handles booking cancellation/removal
+2. Add reordering logic after removal:
+```javascript
+   router.delete('/api/bookings/:id', async (req, res) => {
+     const { id } = req.params;
+     
+     try {
+       // Get the booking before deleting to know its position
+       const bookingToRemove = await Booking.findById(id);
+       
+       if (!bookingToRemove) {
+         return res.status(404).json({ error: 'Booking not found' });
+       }
+       
+       const removedPosition = bookingToRemove.position;
+       console.log('Removing booking at position:', removedPosition);
+       
+       // Delete the booking
+       await Booking.findByIdAndDelete(id);
+       
+       // Reorder the queue if the removed booking had a position
+       if (removedPosition) {
+         await reorderQueue(removedPosition);
+       }
+       
+       res.json({ 
+         success: true, 
+         message: 'Booking removed and queue reordered' 
+       });
+       
+     } catch (error) {
+       console.error('Error removing booking:', error);
+       res.status(500).json({ error: error.message });
+     }
+   });
+```
+
+**STEP 5 - Handle Status Changes (Cancel/Complete):**
+
+1. If bookings are cancelled or completed (not deleted), also reorder:
+```javascript
+   router.post('/api/bookings/cancel', async (req, res) => {
+     const { bookingId } = req.body;
+     
+     try {
+       const booking = await Booking.findById(bookingId);
+       
+       if (!booking) {
+         return res.status(404).json({ error: 'Booking not found' });
+       }
+       
+       const removedPosition = booking.position;
+       
+       // Update status to cancelled and remove from queue
+       await Booking.findByIdAndUpdate(bookingId, {
+         status: 'cancelled',
+         position: null  // Remove position
+       });
+       
+       // Reorder remaining queue
+       if (removedPosition) {
+         await reorderQueue(removedPosition);
+       }
+       
+       res.json({ 
+         success: true, 
+         message: 'Booking cancelled and queue reordered' 
+       });
+       
+     } catch (error) {
+       console.error('Error cancelling booking:', error);
+       res.status(500).json({ error: error.message });
+     }
+   });
+```
+
+**STEP 6 - Display Queue Position in Admin Panel:**
+
+1. Update admin panel table to show position:
+```javascript
+   <table>
+     <thead>
+       <tr>
+         <th>Position</th>  {/* ← Show queue position */}
+         <th>Customer</th>
+         <th>Party Size</th>
+         <th>Message</th>
+         <th>Status</th>
+         <th>Actions</th>
+       </tr>
+     </thead>
+     <tbody>
+       {bookings
+         .filter(b => b.status === 'waiting')
+         .sort((a, b) => a.position - b.position)
+         .map((booking) => (
+           <tr key={booking._id}>
+             <td>#{booking.position}</td>  {/* ← Display position */}
+             <td>{booking.customerName}</td>
+             <td>{booking.partySize}</td>
+             <td>{booking.message || 'No special requests'}</td>
+             <td>{booking.status}</td>
+             <td>
+               <button onClick={() => handleRemove(booking._id)}>
+                 Remove
+               </button>
+             </td>
+           </tr>
+         ))}
+     </tbody>
+   </table>
+```
+
+**STEP 7 - Real-time Updates (Optional but Recommended):**
+
+1. After reordering, emit event to refresh admin panel:
+```javascript
+   // If using Socket.io
+   io.emit('queueUpdated', { message: 'Queue positions updated' });
+   
+   // In admin panel, listen for updates
+   socket.on('queueUpdated', () => {
+     fetchBookings(); // Refresh the list
+   });
+```
+
+**STEP 8 - Handle Edge Cases:**
+
+1. **Multiple removals at once:** Reorder after each removal
+2. **No position assigned:** Skip reordering for bookings without positions
+3. **Empty queue:** Handle gracefully when no one is in queue
+4. **Concurrent updates:** Use transactions if multiple admins are managing queue
+
+**TESTING SCENARIO:**
+
+**Initial Queue:**

@@ -28,6 +28,7 @@ export type QueueEntry = {
   respondedAt?: Date;
   responseType?: 'accepted' | 'cancelled' | 'expired';
   message?: string;
+  position?: number;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -191,9 +191,16 @@ export async function registerRoutes(
     };
 
     if (!onlyMessage) {
+      const removedPosition = entry.position;
       updates.status = 'confirmed';
+      updates.position = null;
       updates.respondedAt = new Date();
       updates.responseType = 'accepted';
+      
+      if (removedPosition) {
+        // @ts-ignore
+        await storage.reorderQueue(removedPosition);
+      }
     }
 
     entry = await storage.updateQueueEntry(id, updates);
@@ -206,11 +213,19 @@ export async function registerRoutes(
     let entry = await storage.getQueueEntry(id);
     if (!entry) return res.status(404).json({ message: "Not found" });
 
+    const removedPosition = entry.position;
+
     entry = await storage.updateQueueEntry(id, {
       status: 'cancelled',
+      position: undefined,
       respondedAt: new Date(),
       responseType: 'cancelled'
     });
+
+    if (removedPosition) {
+      // @ts-ignore
+      await storage.reorderQueue(removedPosition);
+    }
     res.json(entry);
   });
 
