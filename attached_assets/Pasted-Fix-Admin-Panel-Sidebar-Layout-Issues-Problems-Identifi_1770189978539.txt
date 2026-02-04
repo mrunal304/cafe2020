@@ -1,0 +1,131 @@
+Fix Admin Panel Sidebar Layout Issues:
+Problems Identified:
+
+❌ "Recent Activity" menu item is barely visible (very faint/washed out)
+❌ Admin profile section at bottom is not clearly visible
+❌ "Sign Out" button text is barely readable
+❌ Poor contrast between text and background throughout sidebar
+❌ Sidebar background color blending with main content area
+
+
+Complete Fix - Left Sidebar Styling:
+1. Sidebar Background:
+
+Change background from light cream to dark brown: #5C3317 or #6B4423
+This creates clear separation from main content area
+Full height: 100vh
+Width: 250px
+Position: fixed or sticky
+
+2. Header Section:
+
+"Admin Panel" text:
+
+Color: White (#FFFFFF)
+Font-size: 24px
+Font-weight: Bold (700)
+Padding: 25px 20px
+Center or left-aligned
+
+
+
+3. Menu Items Styling:
+Active Queue (selected state):
+
+Background: Lighter brown (#8B6B47) or rgba(255,255,255,0.15)
+Text color: White (#FFFFFF)
+Font-weight: 600
+Border-radius: 8px
+Padding: 12px 20px
+Margin: 8px 15px
+Icon color: White
+
+Recent Activity (unselected state):
+
+Background: Transparent
+Text color: Light cream/beige (#E8DCC4) or rgba(255,255,255,0.7)
+Font-weight: 500
+Same padding and margin
+Hover state: rgba(255,255,255,0.1) background
+Icon color: Match text color
+
+4. Bottom Section (Admin Profile & Logout):
+Container styling:
+
+Position: absolute or fixed
+Bottom: 0
+Left: 0
+Width: 100% of sidebar
+Background: Same dark brown or slightly darker (#4A2810)
+Border-top: 1px solid rgba(255,255,255,0.15)
+Padding: 20px
+
+Admin profile:
+
+Profile icon: White circle with initials or avatar
+Name "admin": White (#FFFFFF), bold, 16px
+Role "Admin": Light gray (#C4B5A0), 13px
+Display: flex, align-items: center
+Gap: 12px between icon and text
+
+Sign Out button:
+
+Background: Transparent with border 1px solid rgba(255,255,255,0.3)
+OR solid background: #8B6B47
+Text: "Sign Out" in White (#FFFFFF), 14px, bold
+Icon: 🚪 or → before text (white color)
+Full width
+Padding: 10px 15px
+Border-radius: 6px
+Margin-top: 15px
+Hover: Background #8B6B47 or rgba(255,255,255,0.2)
+Cursor: pointer
+
+5. Complete Color Scheme:
+Sidebar Background: #5C3317 (dark brown)
+Selected Menu: #8B6B47 (medium brown)
+Unselected Menu Text: #E8DCC4 (light cream)
+All Primary Text: #FFFFFF (white)
+Secondary Text: #C4B5A0 (light gray-brown)
+Borders/Dividers: rgba(255,255,255,0.15)
+Hover States: rgba(255,255,255,0.1)
+6. Typography:
+
+All text should use sans-serif font (Inter, Roboto, System UI)
+Ensure font-weight is at least 500 for readability
+Line-height: 1.5 for better spacing
+
+7. Spacing & Layout:
+Sidebar Structure:
+├─ Header: "Admin Panel" (25px padding)
+├─ Menu Items (15px horizontal margin, 8px vertical)
+│  ├─ Active Queue (selected)
+│  └─ Recent Activity
+├─ [Spacer - flex-grow to push bottom section down]
+└─ Bottom Section (fixed at bottom)
+   ├─ Border-top divider
+   ├─ Admin profile (icon + name + role)
+   └─ Sign Out button
+8. Ensure Fixed/Absolute Positioning:
+
+Bottom section should use:
+
+css  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+OR parent sidebar should use flexbox:
+
+css  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+Expected Result:
+
+Dark brown sidebar clearly separated from cream main content
+White text clearly visible throughout
+"Recent Activity" menu item fully visible and readable
+Admin profile and Sign Out button prominently displayed at bottom
+High contrast for all text elements
+Professional, clean appearance
