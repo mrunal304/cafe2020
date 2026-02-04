@@ -45,12 +45,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const menuItems = [
     {
-      title: "Overview",
+      title: "Recent Activity",
       url: "/admin/dashboard",
       icon: LayoutDashboard,
     },
     {
-      title: "Feedback",
+      title: "Recent Activity",
       url: "/admin/activity",
       icon: History,
     },
