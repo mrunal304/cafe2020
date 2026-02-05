@@ -1,5 +1,6 @@
 import { useQueueList, useUpdateQueueStatus, useCallCustomer } from "@/hooks/use-queue";
 import { AdminLayout } from "@/components/AdminLayout";
+import { MobileAdminLayout } from "@/components/MobileAdminLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,90 +98,90 @@ export default function AdminDashboard() {
     return "border-l-gray-300";
   };
 
-  return (
-    <AdminLayout>
-      <div className="space-y-8">
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-5xl font-serif text-[#4A2810] italic">Queue Management</h1>
-            <p className="text-[#6B6B6B] mt-2 text-lg">Monitor and manage active customer queue in real-time</p>
-          </div>
-          <Badge className="bg-[#FFA500] hover:bg-[#FFA500] text-white px-6 py-2 rounded-full text-sm font-bold self-start md:self-auto shadow-sm">
-            {waitingList.length} Waiting
-          </Badge>
+  const dashboardContent = (
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-5xl font-serif text-[#4A2810] italic">Queue Management</h1>
+          <p className="text-[#6B6B6B] mt-2 text-base md:text-lg">Monitor and manage active customer queue in real-time</p>
         </div>
+        <Badge className="bg-[#FFA500] hover:bg-[#FFA500] text-white px-6 py-2 rounded-full text-sm font-bold self-start md:self-auto shadow-sm">
+          {waitingList.length} Waiting
+        </Badge>
+      </div>
 
-        {/* Date Filter */}
-        <div className="flex flex-col md:flex-row items-center gap-6 bg-white/50 p-6 rounded-xl border border-[#E0E0E0]">
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <span className="text-sm font-bold text-[#4A2810] uppercase tracking-wider whitespace-nowrap">Filter by Date:</span>
-            <div className="relative">
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date: Date | null) => date && setSelectedDate(date)}
-                dateFormat="dd MMM yyyy"
-                className="w-full md:w-48 px-4 py-2 bg-white border border-[#E0E0E0] rounded-lg text-sm font-medium text-[#2C1810] focus:outline-none focus:ring-2 focus:ring-[#5C3317]/20"
-              />
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setSelectedDate(new Date())}
-              className="bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
-            >
-              Today
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                setSelectedDate(yesterday);
-              }}
-              className="bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
-            >
-              Yesterday
-            </Button>
-          </div>
-
-          <div className="md:ml-auto text-sm font-medium text-[#6B6B6B]">
-            Showing bookings for: <span className="text-[#2C1810] font-bold">{format(selectedDate, "dd MMM yyyy")}</span>
-          </div>
-        </div>
-
-        {/* Table Controls */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white/50 p-4 rounded-xl">
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B8B8B]" />
-            <Input 
-              placeholder="Search customers..." 
-              className="pl-10 bg-white border-[#E0E0E0] rounded-lg"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+      {/* Date Filter */}
+      <div className="flex flex-col md:flex-row items-center gap-6 bg-white/50 p-6 rounded-xl border border-[#E0E0E0]">
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <span className="text-sm font-bold text-[#4A2810] uppercase tracking-wider whitespace-nowrap">Filter by Date:</span>
+          <div className="relative w-full md:w-auto">
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date: Date | null) => date && setSelectedDate(date)}
+              dateFormat="dd MMM yyyy"
+              className="w-full md:w-48 px-4 py-2 bg-white border border-[#E0E0E0] rounded-lg text-sm font-medium text-[#2C1810] focus:outline-none focus:ring-2 focus:ring-[#5C3317]/20"
             />
           </div>
-          <div className="flex items-center gap-2 text-xs text-[#8B8B8B] font-medium">
-            <RefreshCw className="w-3 h-3" />
-            Updated {formatDistanceToNow(lastUpdated, { addSuffix: true })}
-          </div>
+        </div>
+        
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setSelectedDate(new Date())}
+            className="flex-1 md:flex-none bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
+          >
+            Today
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              setSelectedDate(yesterday);
+            }}
+            className="flex-1 md:flex-none bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
+          >
+            Yesterday
+          </Button>
         </div>
 
-        {/* Queue Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#E0E0E0] overflow-hidden">
+        <div className="md:ml-auto text-sm font-medium text-[#6B6B6B]">
+          Showing bookings for: <span className="text-[#2C1810] font-bold">{format(selectedDate, "dd MMM yyyy")}</span>
+        </div>
+      </div>
+
+      {/* Table Controls */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white/50 p-4 rounded-xl">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B8B8B]" />
+          <Input 
+            placeholder="Search customers..." 
+            className="pl-10 bg-white border-[#E0E0E0] rounded-lg"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2 text-xs text-[#8B8B8B] font-medium">
+          <RefreshCw className="w-3 h-3" />
+          Updated {formatDistanceToNow(lastUpdated, { addSuffix: true })}
+        </div>
+      </div>
+
+      {/* Queue Table */}
+      <div className="bg-white rounded-xl shadow-sm border border-[#E0E0E0] overflow-hidden">
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-[#D4C4B0] hover:bg-[#D4C4B0] border-none">
                 <TableHead className="w-16 font-bold text-[#2C1810]">#</TableHead>
                 <TableHead className="font-bold text-[#2C1810]">Customer</TableHead>
                 <TableHead className="text-center font-bold text-[#2C1810]">Party Size</TableHead>
-                <TableHead className="font-bold text-[#2C1810]">Wait Time</TableHead>
-                <TableHead className="font-bold text-[#2C1810]">Message 💬</TableHead>
-                <TableHead className="font-bold text-[#2C1810]">Date & Time</TableHead>
+                <TableHead className="font-bold text-[#2C1810] hidden sm:table-cell">Wait Time</TableHead>
+                <TableHead className="font-bold text-[#2C1810] hidden md:table-cell">Message 💬</TableHead>
+                <TableHead className="font-bold text-[#2C1810] hidden lg:table-cell">Date & Time</TableHead>
                 <TableHead className="font-bold text-[#2C1810]">Status</TableHead>
                 <TableHead className="text-right font-bold text-[#2C1810]">Actions</TableHead>
               </TableRow>
@@ -206,8 +207,14 @@ export default function AdminDashboard() {
                     <TableCell>
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSelectedMessage({ name: entry.name, message: entry.message || "No special requests" })}>
-                          <span className="font-bold text-[#2C1810]">{entry.name}</span>
-                          <button className="text-[#5C3317] hover:opacity-70" onClick={(e) => { e.stopPropagation(); window.location.href = `tel:${entry.phoneNumber}`; }}>
+                          <span className="font-bold text-[#2C1810] break-words">{entry.name}</span>
+                          <button 
+                            className="text-[#5C3317] hover:opacity-70 flex-shrink-0" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              window.location.href = `tel:${entry.phoneNumber}`; 
+                            }}
+                          >
                             <Phone className="w-3 h-3" />
                           </button>
                         </div>
@@ -216,37 +223,34 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell className="text-center font-medium">
                       <div className="flex items-center justify-center gap-1 text-[#2C1810]">
-                        <Users className="w-4 h-4" />
+                        <Users className="w-4 h-4 flex-shrink-0" />
                         {entry.numberOfPeople}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       <div className="flex flex-col">
                         <span className={`text-xs font-bold uppercase tracking-tight ${entry.status === 'called' ? 'text-[#0066FF]' : 'text-[#8B8B8B]'}`}>
-                          {entry.status === 'called' ? 'Waiting for response...' : 'Waiting'}
+                          {entry.status === 'called' ? 'Waiting...' : 'Waiting'}
                         </span>
                         {entry.status === 'called' && <Loader2 className="w-3 h-3 animate-spin text-[#0066FF] mt-1" />}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="max-w-[200px]">
-                        <div className="text-sm text-[#2C1810] font-medium">
-                          {entry.message || "No special requests"}
+                    <TableCell className="hidden md:table-cell">
+                      <div className="max-w-[150px] lg:max-w-[200px]">
+                        <div className="text-sm text-[#2C1810] font-medium truncate">
+                          {entry.message || "None"}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       <div className="flex flex-col text-xs text-[#6B6B6B]">
                         <span className="flex items-center gap-1 font-medium">
-                          <Calendar className="w-3 h-3" />
-                          {format(new Date(entry.createdAt!), "dd MMM yyyy")}
+                          <Calendar className="w-3 h-3 flex-shrink-0" />
+                          {format(new Date(entry.createdAt!), "dd MMM")}
                         </span>
                         <span className="flex items-center gap-1 mt-0.5">
-                          <Clock className="w-3 h-3" />
+                          <Clock className="w-3 h-3 flex-shrink-0" />
                           {format(new Date(entry.createdAt!), "hh:mm a")}
-                        </span>
-                        <span className="text-[10px] text-[#8B8B8B] mt-1 italic">
-                          {formatDistanceToNow(new Date(entry.createdAt!), { addSuffix: true })}
                         </span>
                       </div>
                     </TableCell>
@@ -254,42 +258,42 @@ export default function AdminDashboard() {
                       <StatusBadge status={entry.status} />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1 md:gap-2">
                         {entry.status === 'waiting' && (
                           <Button 
                             size="sm"
                             onClick={() => handleCall(entry.id, entry.phoneNumber)}
-                            className="bg-[#0066FF] hover:bg-[#0044CC] text-white px-4"
+                            className="bg-[#0066FF] hover:bg-[#0044CC] text-white px-2 md:px-4 h-8 md:h-9"
                           >
-                            <Phone className="w-4 h-4 mr-1.5" />
-                            Call Now
+                            <Phone className="w-3 h-3 md:w-4 md:h-4 md:mr-1.5" />
+                            <span className="hidden md:inline">Call Now</span>
                           </Button>
                         )}
                         {entry.status === 'called' && (
                           <Button 
                             size="sm"
                             onClick={() => handleStatus(entry.id, 'confirmed')}
-                            className="bg-[#28A745] hover:bg-[#218838] text-white px-4"
+                            className="bg-[#28A745] hover:bg-[#218838] text-white px-2 md:px-4 h-8 md:h-9"
                           >
-                            <CheckCircle className="w-4 h-4 mr-1.5" />
-                            Confirm
+                            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 md:mr-1.5" />
+                            <span className="hidden md:inline">Confirm</span>
                           </Button>
                         )}
                         {entry.status === 'confirmed' && (
                           <Button 
                             size="sm"
                             onClick={() => handleStatus(entry.id, 'completed')}
-                            className="bg-[#5C3317] hover:bg-[#452611] text-white px-4"
+                            className="bg-[#5C3317] hover:bg-[#452611] text-white px-2 md:px-4 h-8 md:h-9"
                           >
-                            <CheckCircle className="w-4 h-4 mr-1.5" />
-                            Finish
+                            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 md:mr-1.5" />
+                            <span className="hidden md:inline">Finish</span>
                           </Button>
                         )}
                         <Button 
                           variant="ghost" 
                           size="icon"
                           onClick={() => handleStatus(entry.id, 'cancelled')}
-                          className="text-[#8B8B8B] hover:text-[#DC3545] hover:bg-red-50"
+                          className="text-[#8B8B8B] hover:text-[#DC3545] hover:bg-red-50 w-8 h-8 md:w-9 md:h-9"
                         >
                           <Ban className="w-4 h-4" />
                         </Button>
@@ -304,26 +308,41 @@ export default function AdminDashboard() {
       </div>
 
       <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[95vw] sm:max-w-md rounded-xl">
           <DialogHeader>
-            <DialogTitle className="font-serif text-2xl text-[#2C1810]">
-              You got a message from {selectedMessage?.name}
+            <DialogTitle className="font-serif text-xl md:text-2xl text-[#2C1810]">
+              Message from {selectedMessage?.name}
             </DialogTitle>
           </DialogHeader>
-          <div className="py-6 text-[#6B6B6B] leading-relaxed">
+          <div className="py-4 md:py-6 text-[#6B6B6B] leading-relaxed">
             {selectedMessage?.message}
           </div>
-          <DialogFooter className="flex gap-2">
-            <Button variant="outline" onClick={() => setSelectedMessage(null)} className="border-[#E0E0E0]">
-              Mark as Read
+          <DialogFooter className="flex flex-row gap-2 justify-end">
+            <Button variant="outline" onClick={() => setSelectedMessage(null)} className="border-[#E0E0E0] text-sm h-10">
+              Mark Read
             </Button>
-            <Button className="bg-[#5C3317] text-white hover:bg-[#452611]" onClick={() => setSelectedMessage(null)}>
+            <Button className="bg-[#5C3317] text-white hover:bg-[#452611] text-sm h-10" onClick={() => setSelectedMessage(null)}>
               Close
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AdminLayout>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="hidden md:block">
+        <AdminLayout>
+          {dashboardContent}
+        </AdminLayout>
+      </div>
+      <div className="md:hidden">
+        <MobileAdminLayout>
+          {dashboardContent}
+        </MobileAdminLayout>
+      </div>
+    </>
   );
 }
 
