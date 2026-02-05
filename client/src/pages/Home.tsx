@@ -36,7 +36,8 @@ export default function Home() {
     joinQueue(data, {
       onSuccess: (entry) => {
         // Use entry.position for real-time queue position
-        const position = entry.position || 1;
+        // The popup and main card must show the same position.
+        const position = entry.position || entry.queueNumber || 1;
         toast({
           title: "Welcome to the queue!",
           description: `You are #${position} in line.`,

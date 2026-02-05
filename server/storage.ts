@@ -105,7 +105,7 @@ export class MongoStorage implements IStorage {
     const lastEntry = await (MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }) as any).exec();
     const nextPosition = lastEntry && lastEntry.position ? lastEntry.position + 1 : 1;
     
-    const lastQueueNumberEntry = await (MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }) as any);
+    const lastQueueNumberEntry = await (MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }) as any).exec();
     const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
 
     // Double check for duplicate key if someone else inserted
