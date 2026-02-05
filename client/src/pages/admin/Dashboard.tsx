@@ -64,7 +64,8 @@ export default function AdminDashboard() {
 
   const waitingList = queue?.filter(q => q.status === "waiting") || [];
   const calledList = queue?.filter(q => q.status === "called") || [];
-  const activeList = [...calledList, ...waitingList]
+  const confirmedList = queue?.filter(q => q.status === "confirmed") || [];
+  const activeList = [...calledList, ...waitingList, ...confirmedList]
     .sort((a, b) => (a.position || 999) - (b.position || 999))
     .filter(entry => entry.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -81,6 +82,10 @@ export default function AdminDashboard() {
             queryClient.invalidateQueries({ queryKey: ["/api/queue"] });
           });
       });
+    } else if (status === 'confirmed') {
+      updateStatus({ id, status: 'confirmed' });
+    } else if (status === 'completed') {
+      updateStatus({ id, status: 'completed' });
     } else {
       updateStatus({ id, status });
     }
@@ -250,7 +255,7 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {entry.status === 'waiting' ? (
+                        {entry.status === 'waiting' && (
                           <Button 
                             size="sm"
                             onClick={() => handleCall(entry.id, entry.phoneNumber)}
@@ -259,7 +264,8 @@ export default function AdminDashboard() {
                             <Phone className="w-4 h-4 mr-1.5" />
                             Call Now
                           </Button>
-                        ) : (
+                        )}
+                        {entry.status === 'called' && (
                           <Button 
                             size="sm"
                             onClick={() => handleStatus(entry.id, 'confirmed')}
@@ -267,6 +273,16 @@ export default function AdminDashboard() {
                           >
                             <CheckCircle className="w-4 h-4 mr-1.5" />
                             Confirm
+                          </Button>
+                        )}
+                        {entry.status === 'confirmed' && (
+                          <Button 
+                            size="sm"
+                            onClick={() => handleStatus(entry.id, 'completed')}
+                            className="bg-[#5C3317] hover:bg-[#452611] text-white px-4"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1.5" />
+                            Finish
                           </Button>
                         )}
                         <Button 
