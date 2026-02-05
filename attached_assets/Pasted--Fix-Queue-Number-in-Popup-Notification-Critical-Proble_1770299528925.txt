@@ -1,0 +1,85 @@
+# Fix Queue Number in Popup Notification
+
+## Critical Problem to Fix
+
+### Issue: Queue Number Mismatch Between Main Card and Popup
+**Current Behavior:**
+- Main card shows: "Your queue number is #1" ✓ (Correct)
+- Bottom-right popup shows: "You are #56 in line" ✗ (WRONG!)
+- Customer name: SHRADDHA
+- Booking for: 2 people
+- Date & Time: 05 Feb, 07:17 PM
+
+**Expected Behavior:**
+- Main card shows: "#1" 
+- Bottom-right popup should ALSO show: "You are #1 in line"
+- Both should display the SAME queue number
+
+## Root Cause
+The popup notification is using a different variable or calculation:
+- Main card is correctly showing queue position (#1)
+- Popup is incorrectly showing booking ID or wrong number (#56)
+
+## Required Fix
+
+### 1. Update Popup Notification
+Find the popup/toast notification code (bottom-right corner) that shows:
+```
+"Welcome to the queue!
+You are #56 in line."
+```
+
+Change it to use the SAME queue position variable as the main card.
+
+### 2. Ensure Consistency
+Both places should use the SAME source for queue number:
+- Main card: Shows queue position ✓
+- Popup notification: Should show SAME queue position (currently broken)
+
+### 3. Code Location to Check
+Look for:
+- Toast notification component
+- Popup notification component  
+- Bottom-right notification display
+- The text "Welcome to the queue!" or "You are #[X] in line"
+
+## Implementation Steps
+
+1. **Find popup notification code** (bottom-right corner component)
+2. **Locate the variable** showing "#56" 
+3. **Replace with** the SAME queue position variable used in main card (currently showing #1 correctly)
+4. **Ensure both use same data source** - likely a `queuePosition` or similar variable
+
+## Example Fix Logic
+```
+// WRONG (current popup code):
+notification.text = `You are #${bookingId} in line`  // Shows #56
+
+// CORRECT (should be):
+notification.text = `You are #${queuePosition} in line`  // Shows #1
+```
+
+## Testing Checklist
+After fix, verify:
+- [ ] Main card shows queue number (e.g., #1)
+- [ ] Popup notification shows SAME queue number (e.g., #1)
+- [ ] Both update together if queue position changes
+- [ ] No mismatch between main display and popup
+
+## Keep Everything Else As-Is
+
+✅ **DO NOT CHANGE:**
+- Queue position calculation on main card (working correctly)
+- Recent Activity page functionality
+- Confirmation flow
+- "I am coming" button
+- Leave Queue functionality
+- Booking details display
+- Date & time display
+- Any other features
+
+⚠️ **ONLY FIX:** The queue number shown in the bottom-right popup notification to match the main card's queue number.
+
+## Visual Reference
+- Main Card: "#1" ← Correct ✓
+- Popup: "#56" ← Needs to show "#1" instead

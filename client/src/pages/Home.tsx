@@ -37,9 +37,9 @@ export default function Home() {
       onSuccess: (entry) => {
         toast({
           title: "Welcome to the queue!",
-          description: `You are #${entry.queueNumber} in line.`,
+          description: `You are #${entry.position} in line.`,
         });
-        setLocation(`/queue/${entry.queueNumber}`);
+        setLocation(`/queue/${entry.id}`);
       },
       onError: (err) => {
         toast({
