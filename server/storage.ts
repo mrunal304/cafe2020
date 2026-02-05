@@ -103,7 +103,7 @@ export class MongoStorage implements IStorage {
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
     const lastEntry = await (MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }) as any).exec();
-    const nextPosition = lastEntry && lastEntry.position ? lastEntry.position + 1 : 1;
+    const nextPosition = lastEntry && typeof lastEntry.position === 'number' ? lastEntry.position + 1 : 1;
     
     const lastQueueNumberEntry = await (MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }) as any).exec();
     const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
@@ -139,7 +139,10 @@ export class MongoStorage implements IStorage {
     if (['waiting', 'called', 'confirmed'].includes(mapped.status)) {
       const position = await MongoQueueEntry.countDocuments({
         status: { $in: ['waiting', 'called', 'confirmed'] },
-        createdAt: { $lt: entry.createdAt },
+        $or: [
+          { createdAt: { $lt: entry.createdAt } },
+          { createdAt: entry.createdAt, _id: { $lt: entry._id } }
+        ],
         // Same date check
         $expr: {
           $eq: [
