@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import logoUrl from "@assets/logo_transparent.png";
+import logoUrl from "@assets/images/cafe-twenty-twenty-logo.png";
 
 export function CustomerLayout({ children }: { children: ReactNode }) {
   return (
@@ -9,14 +9,17 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
       
       <div className="w-full max-w-md z-10 h-full flex flex-col py-8 overflow-hidden">
         {/* Logo Header */}
-        <div className="flex flex-col items-center mb-10 flex-shrink-0">
-          <div className="w-48 transition-transform duration-300">
+        <div className="flex flex-col items-center mb-6 flex-shrink-0">
+          <div className="w-40 transition-transform duration-300">
             <img 
               src={logoUrl} 
-              alt="Made in 2020 Logo" 
+              alt="Cafe Twenty Twenty" 
               className="w-full h-auto object-contain"
             />
           </div>
+          <h1 className="text-3xl font-bold text-stone-900 mt-4">
+            Cafe Twenty Twenty
+          </h1>
         </div>
 
         {/* Main Content Card */}
@@ -26,7 +29,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
 
         {/* Footer */}
         <p className="text-center text-stone-400 font-bold text-[10px] mt-4 uppercase tracking-widest opacity-60 flex-shrink-0">
-          &copy; {new Date().getFullYear()} Cafe 2020. Powered by ReserveGo
+          &copy; {new Date().getFullYear()} Cafe Twenty Twenty. Powered by ReserveGo
         </p>
       </div>
     </div>

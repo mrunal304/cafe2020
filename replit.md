@@ -1,8 +1,8 @@
-# Cafe 2020 Queue Management System
+# Cafe Twenty Twenty Queue Management System
 
 ## Overview
 
-A full-stack queue management system for Cafe 2020 featuring QR code entry, real-time notifications, SMS integration via Twilio, and time-based table acceptance logic. Customers can join a queue, receive SMS notifications when called, and have 10 minutes to accept their table before the booking expires.
+A full-stack queue management system for Cafe Twenty Twenty featuring QR code entry, real-time notifications, SMS integration via Twilio, and time-based table acceptance logic. Customers can join a queue, receive SMS notifications when called, and have 10 minutes to accept their table before the booking expires.
 
 The system has two main interfaces:
 - **Customer-facing pages**: Mobile-first design for joining queues, viewing status, and accepting/declining table calls

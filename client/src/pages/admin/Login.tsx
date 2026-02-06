@@ -38,11 +38,15 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 border border-stone-200">
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-orange-500 p-3 rounded-xl mb-4 shadow-lg shadow-orange-500/20">
-            <Coffee className="w-8 h-8 text-white" />
+          <div className="w-32 mb-4">
+            <img 
+              src="/cafe-twenty-twenty-logo.png" 
+              alt="Cafe Twenty Twenty" 
+              className="w-full h-auto object-contain"
+            />
           </div>
-          <h1 className="text-2xl font-bold font-display text-stone-800">Admin Login</h1>
-          <p className="text-stone-500 text-sm">Cafe 2020 Management System</p>
+          <h1 className="text-2xl font-bold font-display text-stone-800">Cafe Twenty Twenty</h1>
+          <p className="text-stone-500 text-sm">Management System</p>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

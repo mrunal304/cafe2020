@@ -1,0 +1,185 @@
+# Replace Logo and Update Cafe Name
+
+## Current Setup (Image 2 - Coffee Cup Logo)
+- Logo: Simple coffee cup with steam
+- Text: "MADE IN 2020"
+
+## Required Change (Image 1 - Professional Badge Logo)
+- Logo: Use the "CAFÉ TWENTY TWENTY" circular badge logo (Image 1)
+- Text below logo: "Cafe Twenty Twenty" (NOT "Made in 2020")
+
+---
+
+## What to Change
+
+### 1. Replace Logo Image
+
+**Current logo file being used:**
+Probably named something like: `coffee-cup.png` or `logo.png`
+
+**New logo to use:**
+The user will upload the circular badge logo (CAFÉ TWENTY TWENTY - Image 1)
+File name will be something like: `cafe-twenty-twenty-logo.png`
+
+**In the code, update the logo source:**
+
+```jsx
+// BEFORE (coffee cup logo):
+<img src="/logo.png" alt="Made in 2020" />
+
+// AFTER (circular badge logo):
+<img src="/cafe-twenty-twenty-logo.png" alt="Cafe Twenty Twenty" />
+```
+
+### 2. Update Text Below Logo
+
+**Current text:**
+```
+"MADE IN 2020"
+```
+
+**Change to:**
+```
+"Cafe Twenty Twenty"
+```
+
+**In the code:**
+```jsx
+// BEFORE:
+<h1>MADE IN 2020</h1>
+
+// AFTER:
+<h1>Cafe Twenty Twenty</h1>
+```
+
+---
+
+## Where to Make Changes
+
+### Location: Home Page / Booking Form Page
+
+Look for the file: `client/src/pages/Home.tsx` or `client/src/components/Header.tsx`
+
+Find the section with:
+1. The logo image
+2. The text "MADE IN 2020" or cafe name
+
+### Update Logo Reference
+
+```jsx
+{/* Logo Section */}
+<div className="flex flex-col items-center mb-6">
+  <img 
+    src="/cafe-twenty-twenty-logo.png"  {/* ← Update this path */}
+    alt="Cafe Twenty Twenty" 
+    className="w-32 h-32 mb-3"  {/* Adjust size if needed */}
+  />
+  <h1 className="text-2xl font-bold text-stone-900">
+    Cafe Twenty Twenty  {/* ← Update this text */}
+  </h1>
+</div>
+```
+
+---
+
+## Steps for User
+
+1. **Upload the new logo:**
+   - Take Image 1 (CAFÉ TWENTY TWENTY circular badge)
+   - Upload to Replit in the `public` folder or `assets` folder
+   - Name it something clear like: `cafe-twenty-twenty-logo.png`
+
+2. **Update the code:**
+   - Find where current logo is referenced
+   - Change the image source to the new logo filename
+   - Change text from "MADE IN 2020" to "Cafe Twenty Twenty"
+
+---
+
+## Logo Sizing (If Needed)
+
+The circular badge logo might need different sizing than the coffee cup:
+
+```jsx
+{/* Adjust size based on logo dimensions */}
+<img 
+  src="/cafe-twenty-twenty-logo.png"
+  alt="Cafe Twenty Twenty"
+  className="w-40 h-40 object-contain"  {/* Adjust w-40 h-40 as needed */}
+/>
+```
+
+If logo appears too big or small:
+- Increase: `w-48 h-48` or `w-56 h-56`
+- Decrease: `w-32 h-32` or `w-24 h-24`
+
+---
+
+## Color Considerations
+
+The circular badge logo (Image 1) is dark/black on transparent or light background.
+
+Make sure the background color matches:
+```jsx
+<div className="bg-stone-50 p-6 rounded-3xl">  {/* Light background */}
+  <img src="/cafe-twenty-twenty-logo.png" alt="Cafe Twenty Twenty" />
+</div>
+```
+
+---
+
+## Complete Example
+
+```jsx
+{/* Header Section with Logo */}
+<div className="flex flex-col items-center justify-center py-8 bg-stone-50">
+  
+  {/* Circular Badge Logo */}
+  <img 
+    src="/cafe-twenty-twenty-logo.png" 
+    alt="Cafe Twenty Twenty"
+    className="w-40 h-40 object-contain mb-4"
+  />
+  
+  {/* Cafe Name */}
+  <h1 className="text-3xl font-bold text-stone-900 mb-2">
+    Cafe Twenty Twenty
+  </h1>
+  
+  {/* Optional tagline */}
+  <p className="text-stone-600 text-sm">
+    Roasted Rich, Served Rustic
+  </p>
+  
+</div>
+
+{/* Rest of the booking form */}
+<div className="p-6">
+  <h2>Join the Queue</h2>
+  {/* ... form fields ... */}
+</div>
+```
+
+---
+
+## What User Needs to Do
+
+1. ✅ Upload circular badge logo (Image 1) to Replit
+2. ✅ Tell Replit: "Replace the current logo with the uploaded cafe-twenty-twenty-logo.png"
+3. ✅ Tell Replit: "Change text from 'MADE IN 2020' to 'Cafe Twenty Twenty'"
+
+---
+
+## Summary
+
+**Replace:**
+- Coffee cup logo → Circular badge logo (CAFÉ TWENTY TWENTY)
+- "MADE IN 2020" → "Cafe Twenty Twenty"
+
+**Keep:**
+- All other design elements
+- Form functionality
+- Layout structure
+- Colors and styling
+
+Simple swap - just logo image and text update!
