@@ -30,9 +30,9 @@ Preferred communication style: Simple, everyday language.
 - **Password Hashing**: scrypt with random salt
 
 ### Data Layer
-- **Database**: PostgreSQL via Drizzle ORM
-- **Schema Location**: `shared/schema.ts` - defines users, queueEntries, and notifications tables
-- **Migrations**: Drizzle Kit with `db:push` command
+- **Database**: MongoDB via Mongoose ODM
+- **Connection**: `server/mongodb.ts` handles connection using `MONGODB_URI` environment variable
+- **Storage**: `server/storage.ts` implements data access layer
 
 ### Key Data Models
 - **Users**: Admin accounts with username/password authentication
@@ -52,8 +52,8 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 ### Database
-- **PostgreSQL**: Primary data store, connection via `DATABASE_URL` environment variable
-- **Drizzle ORM**: Type-safe database queries and schema management
+- **MongoDB**: Primary data store, connection via `MONGODB_URI` environment variable
+- **Mongoose**: ODM for schema definition and data access
 
 ### SMS/Notifications
 - **Twilio**: SMS notifications when customers are called
@@ -69,7 +69,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Required Environment Variables
 ```
-DATABASE_URL=postgresql://...
+MONGODB_URI=mongodb+srv://...
 SESSION_SECRET=your_session_secret
 TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_token
