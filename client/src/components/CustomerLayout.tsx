@@ -9,16 +9,18 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
       <div className="w-full max-w-md z-10 h-full flex flex-col py-8 overflow-hidden">
         {/* Logo Header */}
         <div className="flex flex-col items-center mb-6 flex-shrink-0">
-          <div className="w-40 transition-transform duration-300">
+          <div className="w-40 transition-transform duration-300 p-6 rounded-3xl bg-[#d2beaa]/90 shadow-sm flex items-center justify-center">
             <img 
               src={logoUrl} 
               alt="Cafe Twenty Twenty" 
               className="w-full h-auto object-contain"
             />
           </div>
-          <h1 className="text-3xl font-bold text-stone-900 mt-4">
-            Cafe Twenty Twenty
-          </h1>
+          <div className="mt-4 px-8 py-2 rounded-2xl bg-[#d2beaa]/90 shadow-sm">
+            <h1 className="text-3xl font-bold text-stone-900">
+              Cafe Twenty Twenty
+            </h1>
+          </div>
         </div>
 
         {/* Main Content Card */}
