@@ -1,0 +1,21 @@
+.bg-carousel {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.3s ease-in-out;
+  filter: blur(0px); /* NO BLUR - images should be clearly visible */
+}
+
+.bg-slide.active {
+  opacity: 1;
+}

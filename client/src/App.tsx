@@ -16,6 +16,7 @@ import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminActivity from "@/pages/admin/Activity";
 
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import BackgroundCarousel from "@/components/BackgroundCarousel";
 
 function Router() {
   const [location] = useLocation();
@@ -23,8 +24,9 @@ function Router() {
 
   return (
     <>
+      {!isAdminPage && <BackgroundCarousel />}
       {!isAdminPage && <AnnouncementBanner />}
-      <div className={!isAdminPage ? "pt-[30px] md:pt-[40px]" : ""}>
+      <div className={!isAdminPage ? "pt-[30px] md:pt-[40px] relative z-10" : ""}>
         <Switch>
           {/* Customer Routes */}
           <Route path="/" component={Home} />

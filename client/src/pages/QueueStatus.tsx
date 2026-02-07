@@ -95,76 +95,63 @@ export default function QueueStatus() {
 
   return (
     <CustomerLayout>
-      <div className="flex flex-col items-center w-full relative">
-        {/* Promotion Alert */}
-        <AnimatePresence>
-          {showPromotion && (
-            <motion.div
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -50, opacity: 0 }}
-              className="fixed top-20 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center gap-2 font-bold whitespace-nowrap"
-            >
-              <PartyPopper className="w-5 h-5" />
-              You moved up! You are now #{queue.position} in line!
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Success Icon */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-[#86C37A] text-white w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-sm"
-        >
-          <Check className="w-7 h-7 stroke-[3]" />
-        </motion.div>
-
-        {/* Headings */}
-        <div className="text-center mb-4">
-          <h2 className="text-3xl font-black text-stone-900 tracking-tight leading-none mb-2">Queued!</h2>
-          <p className="text-[10px] font-bold text-stone-500 uppercase leading-tight opacity-70">
-            Restaurant Timings: 10:30 am to 10:30 pm (Monday to Sunday)
-          </p>
-        </div>
-
-        {/* Queue Info */}
-        <div className="text-center mb-6">
-          <span className="text-stone-900 font-bold text-xs block mb-1">Your queue number is</span>
-          <h1 className="text-7xl font-black text-stone-900 tracking-tighter leading-none">
-            # {queue.position || queue.queueNumber || 1}
-          </h1>
-          <div className="mt-2 text-stone-500 text-[10px] font-bold uppercase tracking-wider">
-            YOU ARE #{queue.position || queue.queueNumber || 1} IN LINE
-          </div>
-        </div>
-
-        {/* Side-by-Side Cards */}
-        <div className="grid grid-cols-2 gap-3 w-full mb-6">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center min-h-[100px]">
-            <span className="text-stone-500 font-bold text-[11px] uppercase mb-1">Booking for</span>
-            <span className="text-[#F39C12] text-3xl font-black leading-none">{queue.numberOfPeople}</span>
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center min-h-[100px]">
-            <span className="text-stone-500 font-bold text-[11px] uppercase mb-1">Date & Time</span>
-            <span className="text-[#F39C12] text-sm font-black leading-tight">
-              {format(new Date(queue.createdAt!), 'dd MMM, hh:mm a')}
-            </span>
-          </div>
-        </div>
-
-        {/* Name & Leave Queue */}
-        <div className="flex flex-col items-center pb-2">
-          <p className="text-stone-500 font-bold text-xs mb-3 uppercase">Name: {queue.name}</p>
-          <Button 
-            variant="outline" 
-            onClick={handleLeaveQueue}
-            disabled={isLeaving}
-            className="bg-white text-stone-900 border-stone-200 font-black px-8 h-10 rounded-xl shadow-sm hover:bg-stone-50 uppercase tracking-wide text-xs"
+      <div className="relative z-10 w-full">
+        <div className="bg-[#c8c8c8f2] p-6 rounded-2xl shadow-xl border border-white/20 w-full flex flex-col items-center">
+          {/* Success Icon */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-[#86C37A] text-white w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-sm"
           >
-            {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
-          </Button>
+            <Check className="w-7 h-7 stroke-[3]" />
+          </motion.div>
+
+          {/* Headings */}
+          <div className="text-center mb-4">
+            <h2 className="text-3xl font-black text-stone-900 tracking-tight leading-none mb-2">Queued!</h2>
+            <p className="text-[10px] font-bold text-stone-600 uppercase leading-tight opacity-70">
+              Restaurant Timings: 10:30 am to 10:30 pm (Monday to Sunday)
+            </p>
+          </div>
+
+          {/* Queue Info */}
+          <div className="text-center mb-6">
+            <span className="text-stone-900 font-bold text-xs block mb-1">Your queue number is</span>
+            <h1 className="text-7xl font-black text-stone-900 tracking-tighter leading-none">
+              # {queue.position || queue.queueNumber || 1}
+            </h1>
+            <div className="mt-2 text-stone-600 text-[10px] font-bold uppercase tracking-wider">
+              YOU ARE #{queue.position || queue.queueNumber || 1} IN LINE
+            </div>
+          </div>
+
+          {/* Side-by-Side Cards */}
+          <div className="grid grid-cols-2 gap-3 w-full mb-6">
+            <div className="bg-white/90 rounded-2xl p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center min-h-[100px]">
+              <span className="text-stone-500 font-bold text-[11px] uppercase mb-1">Booking for</span>
+              <span className="text-[#F39C12] text-3xl font-black leading-none">{queue.numberOfPeople}</span>
+            </div>
+
+            <div className="bg-white/90 rounded-2xl p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center min-h-[100px]">
+              <span className="text-stone-500 font-bold text-[11px] uppercase mb-1">Date & Time</span>
+              <span className="text-[#F39C12] text-sm font-black leading-tight">
+                {format(new Date(queue.createdAt!), 'dd MMM, hh:mm a')}
+              </span>
+            </div>
+          </div>
+
+          {/* Name & Leave Queue */}
+          <div className="flex flex-col items-center pb-2">
+            <p className="text-stone-600 font-bold text-xs mb-3 uppercase">Name: {queue.name}</p>
+            <Button 
+              variant="outline" 
+              onClick={handleLeaveQueue}
+              disabled={isLeaving}
+              className="bg-white/90 text-stone-900 border-stone-200 font-black px-8 h-10 rounded-xl shadow-sm hover:bg-stone-50 uppercase tracking-wide text-xs"
+            >
+              {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
+            </Button>
+          </div>
         </div>
       </div>
 

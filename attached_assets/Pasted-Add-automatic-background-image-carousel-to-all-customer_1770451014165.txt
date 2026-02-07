@@ -1,0 +1,101 @@
+Add automatic background image carousel to all customer-facing pages (except admin panel):
+
+Create a background carousel component that cycles through 5 food/cafe images every 3 seconds
+Images to use:
+
+The 5 images I've uploaded (chocolate shake, coffee beans, quesadilla, pasta, burger, matcha latte)
+Save these images in the project folder at: src/assets/ or public/assets/
+Name them: bg1.jpg, bg2.jpg, bg3.jpg, bg4.jpg, bg5.jpg
+
+
+Implementation requirements:
+
+javascript   // Create BackgroundCarousel.jsx component
+   import { useEffect, useState } from "react";
+   import "./BackgroundCarousel.css";
+   
+   import bg1 from "../assets/bg1.jpg";
+   import bg2 from "../assets/bg2.jpg";
+   import bg3 from "../assets/bg3.jpg";
+   import bg4 from "../assets/bg4.jpg";
+   import bg5 from "../assets/bg5.jpg";
+   
+   const images = [bg1, bg2, bg3, bg4, bg5];
+   
+   export default function BackgroundCarousel() {
+     const [current, setCurrent] = useState(0);
+   
+     useEffect(() => {
+       const interval = setInterval(() => {
+         setCurrent((prev) => (prev + 1) % images.length);
+       }, 3000); // Change every 3 seconds
+   
+       return () => clearInterval(interval);
+     }, []);
+   
+     return (
+       <div className="bg-carousel">
+         {images.map((img, index) => (
+           <div
+             key={index}
+             className={`bg-slide ${index === current ? "active" : ""}`}
+             style={{ backgroundImage: `url(${img})` }}
+           />
+         ))}
+       </div>
+     );
+   }
+
+CSS styling (BackgroundCarousel.css):
+
+css   .bg-carousel {
+     position: fixed;
+     inset: 0;
+     z-index: 1;
+     overflow: hidden;
+   }
+   
+   .bg-slide {
+     position: absolute;
+     inset: 0;
+     background-size: cover;
+     background-position: center;
+     opacity: 0;
+     transition: opacity 1.3s ease-in-out;
+     filter: blur(0px); /* NO BLUR - images should be clearly visible */
+   }
+   
+   .bg-slide.active {
+     opacity: 1;
+   }
+
+Apply to all customer pages EXCEPT admin panel:
+
+Queue/waitlist joining form
+Customer booking forms
+All public-facing pages
+DO NOT apply to admin panel pages
+
+
+Update form styling:
+
+Keep the form container's grey background: rgba(200, 200, 200, 0.95)
+Ensure form has higher z-index than background: z-index: 10 or position: relative
+Keep logo visible with its light background box
+
+
+CRITICAL REQUIREMENTS:
+
+NO BLUR on background images - images must be clearly visible
+Background images should cycle automatically every 3 seconds
+Images must be saved internally in the project code (in assets folder)
+DO NOT modify any functionality
+DO NOT change admin panel styling
+Only change background visuals for customer-facing pages
+
+
+Final result should look like:
+
+Background: Rotating clear food/cafe images (no blur)
+Form: Medium grey container on top of background
+Logo: Has light background box (as in Image 1)
