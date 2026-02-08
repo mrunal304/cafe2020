@@ -154,16 +154,16 @@ export default function AdminActivity() {
 
       {/* History Table */}
       <div className="bg-white rounded-xl shadow-sm border border-[#E0E0E0] overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
+        <div className="overflow-x-auto -webkit-overflow-scrolling-touch w-full">
+          <Table className="min-w-[900px] w-full border-collapse">
             <TableHeader>
               <TableRow className="bg-[#D4C4B0] hover:bg-[#D4C4B0] border-none">
                 <TableHead className="w-16 font-bold text-[#2C1810]">#</TableHead>
                 <TableHead className="font-bold text-[#2C1810]">Customer</TableHead>
                 <TableHead className="text-center font-bold text-[#2C1810]">Party Size</TableHead>
-                <TableHead className="font-bold text-[#2C1810] hidden sm:table-cell">Wait Time</TableHead>
-                <TableHead className="font-bold text-[#2C1810] hidden md:table-cell">Message 💬</TableHead>
-                <TableHead className="font-bold text-[#2C1810] hidden lg:table-cell">Date & Time</TableHead>
+                <TableHead className="font-bold text-[#2C1810]">Wait Time</TableHead>
+                <TableHead className="font-bold text-[#2C1810]">Message 💬</TableHead>
+                <TableHead className="font-bold text-[#2C1810]">Date & Time</TableHead>
                 <TableHead className="font-bold text-[#2C1810]">Status</TableHead>
                 <TableHead className="text-right font-bold text-[#2C1810]">Actions</TableHead>
               </TableRow>
@@ -187,30 +187,30 @@ export default function AdminActivity() {
                   >
                     <TableCell className="font-bold text-lg text-[#2C1810]">#{entry.queueNumber}</TableCell>
                     <TableCell>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col min-w-[150px]">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-[#2C1810]">{entry.name}</span>
                         </div>
                         <span className="text-xs text-[#8B8B8B]">+{entry.phoneNumber}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-center font-medium">
+                    <TableCell className="text-center font-medium min-w-[80px]">
                       <div className="flex items-center justify-center gap-1 text-[#2C1810]">
                         <Users className="w-4 h-4 flex-shrink-0" />
                         {entry.numberOfPeople}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell">
+                    <TableCell className="min-w-[100px]">
                       <span className="text-[#8B8B8B]">-</span>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="min-w-[120px]">
                       <div className="max-w-[150px] lg:max-w-[200px]">
                         <div className="text-sm text-[#2C1810] font-medium truncate">
                           {entry.message || "No special requests"}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell">
+                    <TableCell className="min-w-[140px]">
                       <div className="flex flex-col text-xs text-[#6B6B6B]">
                         <span className="flex items-center gap-1 font-medium">
                           <Calendar className="w-3 h-3 flex-shrink-0" />
@@ -222,10 +222,10 @@ export default function AdminActivity() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="min-w-[100px]">
                       <StatusBadge status={entry.status} />
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right min-w-[120px]">
                       <Button variant="ghost" size="sm" className="text-[#5C3317] hover:bg-[#F0E6D2] h-8 md:h-9">
                         View
                       </Button>
