@@ -5,28 +5,41 @@
 @tailwind utilities;
 
 :root {
-  /* Warm Cafe Palette */
-  --background: 34 50% 96%; /* #FDF8F3 - Very light beige */
-  --foreground: 20 14% 18%; /* Dark brown/grey text */
-  
-  --primary: 30 100% 60%; /* #FF9933 - Vibrant Orange */
-  --primary-foreground: 20 14% 18%; /* Dark text on orange */
-  
-  --secondary: 36 30% 90%; /* #F2ECE4 - Slightly darker beige */
-  --secondary-foreground: 20 14% 18%;
+  /* New Cafe Palette */
+  --brown-primary: 23 39% 39%; /* #8B5A3C */
+  --brown-dark: 21 39% 26%; /* #5A3A28 */
+  --beige: 38 41% 80%; /* #E6D3B1 */
+  --off-white: 35 33% 95%; /* #F7F3EE */
+  --terracotta: 21 54% 50%; /* #C46A3A */
+  --terracotta-dark: 20 57% 42%; /* #A8572E */
+  --olive: 81 22% 39%; /* #6B7A4F */
+  --text-dark: 24 33% 21%; /* #4A3324 */
+  --text-muted: 26 16% 41%; /* #7A6658 */
+  --input-bg: 33 50% 97%; /* #FBF8F4 */
+  --input-border: 33 26% 77%; /* #D8C6B0 */
 
-  --muted: 36 20% 88%;
-  --muted-foreground: 20 10% 45%;
+  /* Shadcn Mapping */
+  --background: var(--off-white);
+  --foreground: var(--text-dark);
   
-  --accent: 150 60% 45%; /* Green for success/go */
-  --accent-foreground: 0 0% 98%;
+  --primary: var(--terracotta);
+  --primary-foreground: 35 33% 95%; /* #F7F3EE */
+  
+  --secondary: var(--beige);
+  --secondary-foreground: var(--text-dark);
+
+  --muted: var(--input-bg);
+  --muted-foreground: var(--text-muted);
+  
+  --accent: var(--olive);
+  --accent-foreground: 35 33% 95%; /* #F7F3EE */
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 36 20% 85%;
-  --input: 36 20% 85%;
-  --ring: 30 100% 60%;
+  --border: var(--input-border);
+  --input: var(--input-border);
+  --ring: var(--brown-primary);
 
   --radius: 1rem;
 
@@ -57,7 +70,7 @@
   }
   
   .orange-gradient {
-    @apply bg-gradient-to-br from-[#FF9933] to-[#FF7700];
+    @apply bg-gradient-to-br from-[#C46A3A] to-[#A8572E];
   }
 
   .animate-pulse-slow {
