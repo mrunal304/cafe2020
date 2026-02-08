@@ -1,0 +1,92 @@
+Update "I'm Coming" Button - Set Fixed Green Background Color
+Page: Queue Response/Action Page (with timer and message options)
+Required Update:
+"I'm Coming!" Button - Set Fixed Green Background:
+
+Element: "I'm Coming!" button (large button near bottom of card)
+Required Change: Set button background to permanent green color
+Color Options: #4CAF50 (Material Green) or #10B981 (Emerald Green)
+Keep: All existing functionality unchanged (button click action remains same)
+
+CSS Implementation:
+css/* I'm Coming Button - Fixed Green Background */
+.im-coming-button {
+  background-color: #4CAF50; /* or #10B981 */
+  border: 2px solid #4CAF50; /* or #10B981 */
+  color: #FFFFFF;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: none; /* Remove transition if not needed */
+}
+
+/* Keep same color on hover (no color change) */
+.im-coming-button:hover {
+  background-color: #4CAF50; /* Same color */
+  border-color: #4CAF50;
+  color: #FFFFFF;
+}
+
+/* Optional: Slight effect on click for user feedback */
+.im-coming-button:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+/* Alternative: Use #10B981 if preferred */
+.im-coming-button {
+  background-color: #10B981;
+  border: 2px solid #10B981;
+  color: #FFFFFF;
+}
+Color Selection Guide:
+
+#4CAF50 - Material Design Green (brighter, more vibrant, classic success green)
+#10B981 - Tailwind Emerald Green (modern, slightly muted, softer appearance)
+
+Recommendation: Use #4CAF50 for better visibility and stronger "success/confirmation" visual cue.
+Requirements:
+DO Update:
+
+✅ Set button background to green (#4CAF50 or #10B981) permanently
+✅ Set button text color to white (#FFFFFF)
+✅ Button should always display green color
+✅ Ensure good contrast for readability
+
+DO NOT Change:
+
+❌ Button click functionality
+❌ "I'm Coming" confirmation logic/API calls
+❌ Button position, size, or layout
+❌ Any JavaScript code or event handlers
+❌ HTML structure or classes
+❌ Other buttons on the page ("Send Message Only", quick response buttons, "Cancel Booking")
+
+Expected Result:
+
+"I'm Coming!" button displays with green background at all times
+White text on green background provides clear contrast
+Button clearly indicates positive/confirmation action
+Clicking button still triggers the same "I'm coming" confirmation action
+
+Files to Modify:
+
+Queue response/action page component CSS only
+Do NOT modify: JavaScript/TypeScript files or component logic
+
+Testing Checklist:
+
+✓ Button displays with green background (#4CAF50 or #10B981)
+✓ Text is white and clearly readable
+✓ Button stands out as primary action
+✓ Clicking button works exactly as before
+✓ No layout shifts or visual breaks
+✓ Color looks good on both light and dark backgrounds
+✓ Test on mobile and desktop views
+
+Visual Hierarchy After Update:
+The green "I'm Coming!" button will stand out as the primary positive action, while other buttons (Send Message Only, Cancel Booking) remain secondary with their current styling.
+Priority: Medium - Visual enhancement to improve user experience and make primary action more prominent.

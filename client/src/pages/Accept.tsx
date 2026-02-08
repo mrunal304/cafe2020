@@ -169,7 +169,7 @@ export default function Accept() {
             <Button
               onClick={handleAccept}
               disabled={isAccepting || isCancelling}
-              className="w-full h-14 text-lg font-bold rounded-xl bg-[var(--olive)] hover:bg-[var(--olive)]/90 text-white shadow-lg shadow-[var(--olive)]/20 hover:scale-[1.02] transition-transform"
+              className="w-full h-14 text-lg font-bold rounded-xl bg-[#4CAF50] hover:bg-[#4CAF50] text-white shadow-lg shadow-[#4CAF50]/20 transition-none active:opacity-90 active:scale-[0.98]"
             >
               {isAccepting ? <Loader2 className="animate-spin" /> : "I'm Coming!"}
             </Button>
