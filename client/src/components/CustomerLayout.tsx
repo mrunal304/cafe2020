@@ -16,10 +16,13 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
               className="w-32 h-auto object-contain"
             />
           </div>
-          <div className="mt-4 px-3 py-1 rounded-xl bg-[var(--off-white)]/90 shadow-sm">
-            <h1 className="text-3xl font-bold text-[var(--text-dark)]">
+          <div className="mt-4 px-3 py-1 rounded-xl bg-[var(--off-white)]/90 shadow-sm text-center">
+            <h1 className="text-3xl font-bold text-[var(--text-dark)] leading-tight">
               Cafe Twenty Twenty
             </h1>
+            <p className="text-[var(--text-dark)]/80 text-sm font-medium italic mt-0.5 tracking-wide font-display">
+              Roasted Rich. Served Rustic.
+            </p>
           </div>
         </div>
 

@@ -1,0 +1,200 @@
+Update the existing website design with the new color palette while maintaining the EXACT same structure, layout, and functionality. This is purely a color replacement task with one text addition - no structural or feature changes.
+New Color Palette to Implement:
+css:root {
+  --brown-primary: #8B5A3C;
+  --brown-dark: #5A3A28;
+  --beige: #E6D3B1;
+  --off-white: #F7F3EE;
+  --terracotta: #C46A3A;
+  --terracotta-dark: #A8572E;
+  --olive: #6B7A4F;
+  --text-dark: #4A3324;
+  --text-muted: #7A6658;
+  --input-bg: #FBF8F4;
+  --input-border: #D8C6B0;
+}
+Current Structure Analysis (Based on Existing Website):
+
+Top Banner:
+
+Currently: Orange background with "DELIVERY COMING SOON!" text
+Update to: Use --terracotta (#C46A3A) or --terracotta-dark (#A8572E)
+
+
+Logo Section:
+
+Currently: White/beige circular logo with "Cafe Twenty Twenty" text
+Keep structure same, update background to --off-white (#F7F3EE)
+
+
+Main Heading:
+
+Currently: "Cafe Twenty Twenty" in dark text
+Update text color to --text-dark (#4A3324)
+
+
+NEW - Tagline to Add:
+
+Add below the main heading: "Roasted Rich. Served Rustic."
+Position: Directly under "Cafe Twenty Twenty" heading
+Text color: --off-white (#F7F3EE) or white for contrast against background
+Font style: Elegant, smaller than main heading, possibly italic or serif font
+Keep it subtle and classy
+
+
+Join the Queue Card:
+
+Currently: Beige/gray background card
+Update to: --beige (#E6D3B1) or --off-white (#F7F3EE)
+Keep exact same structure and layout
+
+
+Input Fields:
+
+Currently: White background with borders
+Update to:
+
+Background: --input-bg (#FBF8F4)
+Border: --input-border (#D8C6B0)
+Focus state: Add border color --brown-primary (#8B5A3C)
+
+
+
+
+Icons (Name, Mobile, Party Size):
+
+Currently: Orange/coral color
+Update to: --terracotta (#C46A3A)
+
+
+Party Size Buttons (1-6):
+
+Currently: White background buttons
+Keep same, add hover state with --beige (#E6D3B1)
+Selected state: --brown-primary (#8B5A3C) background
+
+
+Input Placeholder Field ("e.g. 8 or select above"):
+
+Currently: White/light background
+Update to: --input-bg (#FBF8F4) with --input-border (#D8C6B0)
+
+
+Proceed Button:
+
+Currently: Orange background
+Update to: --terracotta (#C46A3A)
+Hover state: --terracotta-dark (#A8572E)
+
+
+Background Image:
+
+Keep the existing background structure
+Maintain the blur/overlay effect
+No changes to image itself
+
+
+
+Color Mapping Strategy:
+Replace existing colors systematically:
+Current ElementCurrent ColorNew Color VariableNew Color CodeTop banner backgroundOrange--terracotta#C46A3ACard backgroundLight beige/gray--beige or --off-white#E6D3B1 or #F7F3EEInput field backgroundsWhite--input-bg#FBF8F4Input bordersLight gray--input-border#D8C6B0Icons (name, phone, party)Orange--terracotta#C46A3AProceed buttonOrange--terracotta#C46A3AProceed button hoverDark orange--terracotta-dark#A8572EMain headingsBlack--text-dark#4A3324New TaglineN/A--off-white or white#F7F3EE or #FFFFFFSubtitle/description textGray--text-muted#7A6658Focus statesOrange--brown-primary#8B5A3C
+CRITICAL REQUIREMENTS:
+DO Update:
+
+✅ All color values only
+✅ Background colors
+✅ Text colors
+✅ Border colors
+✅ Button colors
+✅ Icon colors
+✅ Hover and focus states (colors only)
+✅ Input field styling colors
+✅ ADD tagline: "Roasted Rich. Served Rustic." below main heading
+
+DO NOT Change:
+
+❌ Layout structure (except adding tagline)
+❌ Component positioning
+❌ Spacing (margins, padding)
+❌ Font sizes (except for new tagline)
+❌ Font families (can choose elegant font for tagline)
+❌ Border radius values
+❌ Shadow effects (except color)
+❌ Any functionality
+❌ Form validation logic
+❌ Button click handlers
+❌ API integrations
+❌ Existing features
+❌ HTML structure (except tagline addition)
+❌ Component hierarchy
+❌ Responsive breakpoints
+
+Tagline Styling Guidelines:
+css/* Example styling for the tagline */
+.tagline {
+  color: var(--off-white); /* or white for better contrast */
+  font-size: 1.2rem; /* Smaller than main heading */
+  font-weight: 300; /* Light weight */
+  font-style: normal; /* or italic for elegance */
+  margin-top: 0.5rem;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+```
+
+**Visual Hierarchy After Update:**
+```
+[Logo - Cafe Twenty Twenty circular badge]
+        ↓
+   Cafe Twenty Twenty (main heading)
+        ↓
+  Roasted Rich. Served Rustic. (NEW tagline)
+        ↓
+    [Join the Queue card]
+Implementation Steps:
+
+Create CSS variables file with the new color palette
+Add tagline text below main heading with appropriate styling
+Find and replace all existing color values:
+
+Search for orange hex codes (e.g., #FF6B35, #FF8C42, etc.)
+Replace with appropriate new color variables
+
+
+Update button styles with new colors
+Update input field colors
+Update icon colors
+Update text colors
+Update background colors
+Test all color changes across different screen sizes
+
+Files to Modify:
+
+Global CSS variables file
+Component stylesheets (only color properties)
+Homepage component (add tagline text)
+Any inline styles with color values
+Theme configuration file (if exists)
+
+Testing Checklist:
+
+✓ Tagline appears below main heading
+✓ Tagline is readable and well-positioned
+✓ All elements display with new colors
+✓ Text remains readable (check contrast)
+✓ Hover states work correctly
+✓ Focus states visible on inputs
+✓ Buttons show proper hover/active colors
+✓ Icons use new color palette
+✓ All functionality works unchanged
+✓ Responsive design intact (tagline adapts to mobile)
+✓ No layout shifts or breaks
+
+Expected Outcome:
+The website should look exactly the same structurally but with:
+
+A warm, rustic brown/beige/terracotta color scheme instead of the current orange theme
+New tagline "Roasted Rich. Served Rustic." elegantly positioned below the main heading
+All interactions, layouts, and features remain identical
+
+Priority: This is a pure cosmetic update - color values only plus one tagline addition. Zero impact on structure, layout, or functionality.
