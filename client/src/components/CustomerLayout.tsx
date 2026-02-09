@@ -38,7 +38,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="flex flex-col items-center mb-2 flex-shrink-0"
+          className="flex flex-col items-center mb-0 flex-shrink-0"
         >
           {/* Logo with animations */}
           <motion.div 
@@ -46,19 +46,16 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             whileHover={{ scale: 1.1, filter: "drop-shadow(0 0 20px rgba(255,255,255,0.4))" }}
-            className="relative p-2"
+            className="relative"
           >
-            {/* Rotating Border */}
-            <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/30 animate-rotate-border" />
-            
             <img 
               src={logoUrl} 
               alt="Cafe Twenty Twenty" 
-              className="w-48 h-48 object-contain animate-subtle-glow"
+              className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-contain animate-subtle-glow"
             />
           </motion.div>
 
-          <div className="mt-0 px-3 py-0 rounded-xl bg-transparent text-center flex flex-col items-center">
+          <div className="-mt-4 sm:-mt-6 md:-mt-8 px-3 py-0 rounded-xl bg-transparent text-center flex flex-col items-center relative z-20">
             {/* Cafe Name with animations */}
             <motion.h1 
               className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm flex animate-gradient-shift hover-shine transition-transform hover:-translate-y-1 px-4 text-center justify-center whitespace-nowrap"
