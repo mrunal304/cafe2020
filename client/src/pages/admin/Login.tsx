@@ -1,3 +1,4 @@
+import cafeLogo from "@/assets/cafe-logo.png";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,7 +41,7 @@ export default function AdminLogin() {
         <div className="flex flex-col items-center mb-8">
           <div className="w-32 mb-4">
             <img 
-              src="/cafe-twenty-twenty-logo.png" 
+              src={cafeLogo} 
               alt="Cafe Twenty Twenty" 
               className="w-full h-auto object-contain"
             />

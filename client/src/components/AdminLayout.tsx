@@ -1,3 +1,4 @@
+import cafeLogo from "@/assets/cafe-logo.png";
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { LogOut, LayoutDashboard, History, User } from "lucide-react";
@@ -61,7 +62,14 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       <div className="flex h-svh w-full overflow-hidden bg-[#FDF8F3]">
         <Sidebar className="border-none bg-[#8B5A3C]">
           <SidebarHeader className="p-8 pb-4">
-            <h2 className="font-serif text-3xl font-normal text-white italic tracking-tight">Admin Panel</h2>
+            <div className="flex flex-col items-center mb-4">
+              <img 
+                src={cafeLogo}
+                alt="Cafe Twenty Twenty"
+                className="w-24 h-24 object-contain mb-2"
+              />
+              <h2 className="font-serif text-2xl font-normal text-white italic tracking-tight text-center leading-tight">Admin Panel</h2>
+            </div>
           </SidebarHeader>
           <SidebarContent className="px-4 pt-6">
             <SidebarGroup>

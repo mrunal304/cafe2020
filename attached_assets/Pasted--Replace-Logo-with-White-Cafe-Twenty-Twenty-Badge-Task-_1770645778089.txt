@@ -1,0 +1,164 @@
+# Replace Logo with White Cafe Twenty Twenty Badge
+
+## Task
+Replace the current logo with the new uploaded white "CAFÉ TWENTY TWENTY" circular badge logo.
+**Keep the logo WHITE** - do not invert colors.
+
+---
+
+## Step 1: Save Logo in Assets Folder
+
+The user will upload: `Adobe_Express_-_file.png`
+
+**Save this file to:**
+```
+client/src/assets/cafe-logo.png
+```
+
+---
+
+## Step 2: Update Logo in Code
+
+### Find Current Logo
+
+Search for logo in these files:
+- `client/src/pages/Home.tsx`
+- `client/src/components/Header.tsx`
+- Any component showing the logo
+
+### Replace with New Logo
+
+```jsx
+// Import at top of file
+import cafeLogo from '../assets/cafe-logo.png';
+
+// Use in JSX - NO INVERT CLASS
+<img 
+  src={cafeLogo}
+  alt="Cafe Twenty Twenty"
+  className="w-32 h-32 object-contain"
+/>
+```
+
+**IMPORTANT: Do NOT add `invert` class - keep logo white as-is**
+
+---
+
+## Complete Code Example
+
+```jsx
+// At top of file
+import cafeLogo from '../assets/cafe-logo.png';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F5EDE4] via-[#E8DDD0] to-[#DED0BF]">
+      
+      {/* Logo Section */}
+      <div className="flex flex-col items-center justify-center py-8">
+        
+        {/* White Cafe Logo */}
+        <img 
+          src={cafeLogo}
+          alt="Cafe Twenty Twenty"
+          className="w-32 h-32 object-contain"
+        />
+        
+      </div>
+      
+      {/* Booking Form */}
+      <div className="max-w-md mx-auto p-6 bg-white/70 rounded-3xl">
+        <h2 className="text-2xl font-bold text-stone-900 mb-2">
+          Join the Queue
+        </h2>
+        {/* ... form fields ... */}
+      </div>
+      
+    </div>
+  );
+}
+```
+
+---
+
+## Logo Sizing
+
+Choose appropriate size:
+
+```jsx
+// Small
+className="w-24 h-24 object-contain"  // 96px
+
+// Medium (Recommended)
+className="w-32 h-32 object-contain"  // 128px
+
+// Large
+className="w-40 h-40 object-contain"  // 160px
+
+// Extra Large
+className="w-48 h-48 object-contain"  // 192px
+```
+
+---
+
+## Key Points
+
+✅ **DO:**
+- Save logo to `client/src/assets/cafe-logo.png`
+- Import: `import cafeLogo from '../assets/cafe-logo.png'`
+- Use: `<img src={cafeLogo} className="w-32 h-32 object-contain" />`
+- Keep logo WHITE (as uploaded)
+
+❌ **DON'T:**
+- Add `invert` class
+- Change logo colors
+- Add dark background around logo
+- Modify logo file itself
+
+---
+
+## Summary
+
+**File location:** `client/src/assets/cafe-logo.png`
+
+**Import:** 
+```jsx
+import cafeLogo from '../assets/cafe-logo.png';
+```
+
+**Usage:**
+```jsx
+<img 
+  src={cafeLogo}
+  alt="Cafe Twenty Twenty"
+  className="w-32 h-32 object-contain"
+/>
+```
+
+**Result:** White logo displays on background images - looks clean and professional!
+
+---
+
+## Keep Everything Else Unchanged
+
+- ❌ Don't change forms
+- ❌ Don't change functionality  
+- ❌ Don't change queue system
+- ❌ Don't change admin panel
+- ❌ Don't change colors
+- ❌ Don't change background images
+
+✅ **ONLY change:** Replace old logo with new white logo file
+
+---
+
+## Testing
+
+After update:
+- [ ] Logo saved in `client/src/assets/cafe-logo.png`
+- [ ] Logo appears WHITE on the page
+- [ ] Logo is visible against background images
+- [ ] Logo size looks good
+- [ ] All functionality works normally
+
+Done!
