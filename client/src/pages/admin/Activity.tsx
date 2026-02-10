@@ -186,7 +186,7 @@ export default function AdminActivity() {
                     key={entry.id} 
                     className="h-20 hover:bg-[#F0E6D2] transition-colors border-b-[#E0E0E0]"
                   >
-                    <TableCell className="font-bold text-lg text-[#2C1810]">#{entry.queueNumber}</TableCell>
+                    <TableCell className="font-bold text-lg text-[#2C1810]">#{entry.dailySerialNumber}</TableCell>
                     <TableCell className="font-bold text-xl text-orange-600">#{entry.dailySerialNumber}</TableCell>
                     <TableCell>
                       <div className="flex flex-col min-w-[150px]">
