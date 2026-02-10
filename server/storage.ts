@@ -127,7 +127,8 @@ export class MongoStorage implements IStorage {
       bookingDate,
       bookingDateTime: now,
       status: 'waiting',
-      position: activeQueuePosition
+      position: activeQueuePosition,
+      updatedAt: now
     });
 
     return this.mapQueueEntry(newEntryDoc);
