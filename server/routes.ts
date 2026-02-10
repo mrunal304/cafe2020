@@ -303,12 +303,12 @@ export async function registerRoutes(
 
       entries.forEach(entry => {
         worksheet.addRow({
-          bookingNum: `#${entry.queueNumber}`,
+          bookingNum: `#${entry.dailyQueueNumber}`,
           name: entry.name,
           phone: entry.phoneNumber,
           partySize: entry.numberOfPeople,
           message: entry.message || 'No special requests',
-          bookingTime: format(new Date(entry.createdAt!), "dd MMM yyyy, hh:mm a"),
+          bookingTime: format(new Date(entry.bookingDateTime!), "dd MMM yyyy, hh:mm a"),
           status: entry.status.toUpperCase(),
         });
       });

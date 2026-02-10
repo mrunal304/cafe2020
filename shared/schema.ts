@@ -18,7 +18,9 @@ export type QueueEntry = {
   name: string;
   phoneNumber: string;
   numberOfPeople: number;
-  queueNumber: number;
+  dailyQueueNumber: number;
+  bookingDate: Date;
+  bookingDateTime: Date;
   status: 'waiting' | 'called' | 'confirmed' | 'expired' | 'cancelled' | 'completed' | 'left';
   notificationSent: boolean;
   notificationSentAt?: Date;

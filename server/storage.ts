@@ -53,7 +53,9 @@ export class MongoStorage implements IStorage {
       name: entry.name,
       phoneNumber: entry.phoneNumber,
       numberOfPeople: entry.numberOfPeople,
-      queueNumber: entry.queueNumber,
+      dailyQueueNumber: entry.dailyQueueNumber,
+      bookingDate: entry.bookingDate,
+      bookingDateTime: entry.bookingDateTime,
       status: entry.status,
       notificationSent: entry.notificationSent,
       notificationSentAt: entry.notificationSentAt,
@@ -102,42 +104,22 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const lastQueueNumberEntry = await MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }).exec();
-    const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
+    const now = new Date();
+    const bookingDate = new Date(now);
+    bookingDate.setHours(0, 0, 0, 0);
 
-    // Double check for duplicate key if someone else inserted
-    let finalQueueNumber = nextQueueNumber;
-    let existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
-    while (existing) {
-      finalQueueNumber++;
-      existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
-    }
+    const count = await MongoQueueEntry.countDocuments({ bookingDate });
+    const dailyQueueNumber = count + 1;
 
     const newEntryDoc = await MongoQueueEntry.create({
       ...entry,
       name: entry.name || undefined,
-      queueNumber: finalQueueNumber,
+      dailyQueueNumber,
+      bookingDate,
+      bookingDateTime: now,
       status: 'waiting',
-      position: 0 // Will be calculated below
+      position: count + 1
     });
-
-    // Calculate real-time position AFTER creation to ensure it's accurate
-    const position = await MongoQueueEntry.countDocuments({
-      status: { $in: ['waiting', 'called', 'confirmed'] },
-      $or: [
-        { createdAt: { $lt: newEntryDoc.createdAt } },
-        { createdAt: newEntryDoc.createdAt, _id: { $lt: newEntryDoc._id } }
-      ],
-      $expr: {
-        $eq: [
-          { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          { $dateToString: { format: "%Y-%m-%d", date: newEntryDoc.createdAt } }
-        ]
-      }
-    });
-
-    newEntryDoc.position = position + 1;
-    await newEntryDoc.save();
 
     return this.mapQueueEntry(newEntryDoc);
   }
@@ -145,7 +127,7 @@ export class MongoStorage implements IStorage {
   async getQueueEntry(id: string): Promise<QueueEntry | undefined> {
     const entry = mongoose.Types.ObjectId.isValid(id) 
       ? await MongoQueueEntry.findById(id)
-      : await MongoQueueEntry.findOne({ queueNumber: parseInt(id) || 0 });
+      : await MongoQueueEntry.findOne({ dailyQueueNumber: parseInt(id) || 0 });
     
     if (!entry) return undefined;
     
@@ -155,17 +137,10 @@ export class MongoStorage implements IStorage {
     if (['waiting', 'called', 'confirmed'].includes(mapped.status)) {
       const position = await MongoQueueEntry.countDocuments({
         status: { $in: ['waiting', 'called', 'confirmed'] },
+        bookingDate: entry.bookingDate,
         $or: [
-          { createdAt: { $lt: entry.createdAt } },
-          { createdAt: entry.createdAt, _id: { $lt: entry._id } }
-        ],
-        // Same date check
-        $expr: {
-          $eq: [
-            { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-            { $dateToString: { format: "%Y-%m-%d", date: entry.createdAt } }
-          ]
-        }
+          { dailyQueueNumber: { $lt: entry.dailyQueueNumber } }
+        ]
       });
       mapped.position = position + 1;
     } else {
@@ -175,22 +150,24 @@ export class MongoStorage implements IStorage {
     return mapped;
   }
 
-  async getQueueEntries(date?: string, statuses?: string[]): Promise<QueueEntry[]> {
+  async getQueueEntries(dateStr?: string, statuses?: string[]): Promise<QueueEntry[]> {
     const filter: any = {};
     
-    if (date) {
-      const startOfDay = new Date(date);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(date);
-      endOfDay.setHours(23, 59, 59, 999);
-      filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
+    if (dateStr) {
+      const bookingDate = new Date(dateStr);
+      bookingDate.setHours(0, 0, 0, 0);
+      filter.bookingDate = bookingDate;
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      filter.bookingDate = today;
     }
 
     const activeStatuses = statuses || ['waiting', 'called', 'confirmed'];
     const entries = await MongoQueueEntry.find({ 
       ...filter,
       status: { $in: activeStatuses } 
-    }).sort({ createdAt: 1 }).exec();
+    }).sort({ dailyQueueNumber: 1 }).exec();
     
     const mapped = entries.map((e: any, index: number) => {
       const entry = this.mapQueueEntry(e);

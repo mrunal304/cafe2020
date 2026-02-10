@@ -44,7 +44,7 @@ export default function Home() {
         console.log("==================");
         toast({
           title: "Welcome to the queue!",
-          description: `You are #${position} in line.`,
+          description: `You are #${entry.dailyQueueNumber} in line.`,
         });
         setLocation(`/queue/${entry.id}`);
       },

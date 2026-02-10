@@ -1,0 +1,158 @@
+FIX QUEUE NUMBERING SYSTEM - Complete Database Restructuring Required
+
+CURRENT ISSUES:
+1. Queue numbers are incrementing continuously (168, 177, 178) instead of resetting daily
+2. Wrong database fields exist (queueNumber, originalQueueNumber)
+3. Queue numbers change when customers are finished
+4. Daily queue numbering is not working properly
+
+REQUIRED DATABASE SCHEMA:
+
+Booking Model Fields:
+{
+  _id: ObjectId,
+  name: String,
+  phoneNumber: String,
+  numberOfPeople: Number,
+  dailyQueueNumber: Number,      // ONLY queue number field needed
+  bookingDate: Date,              // Date only (time set to 00:00:00) for filtering
+  bookingDateTime: Date,          // Full timestamp with time
+  status: String,                 // "waiting", "called", "confirmed", "completed"
+  message: String,
+  notificationSent: Boolean,
+  calledAt: Date,
+  respondedAt: Date,
+  createdAt: Date,
+  updatedAt: Date
+}
+
+IMPORTANT: Remove these fields if they exist:
+- queueNumber
+- originalQueueNumber
+
+Keep only ONE queue field: dailyQueueNumber
+
+
+BUSINESS LOGIC IMPLEMENTATION:
+
+1. WHEN NEW BOOKING IS CREATED:
+   Step 1: Extract the date from booking time (strip hours/minutes/seconds)
+           Example: "2026-02-10 12:39 PM" → "2026-02-10 00:00:00"
+   
+   Step 2: Count existing bookings for that specific date
+           Query: { bookingDate: "2026-02-10 00:00:00" }
+           Example result: 5 bookings exist
+   
+   Step 3: Assign dailyQueueNumber = count + 1
+           New booking gets dailyQueueNumber: 6
+   
+   Step 4: Save booking with:
+           {
+             name: "customer name",
+             phoneNumber: "phone",
+             numberOfPeople: 4,
+             dailyQueueNumber: 6,
+             bookingDate: "2026-02-10 00:00:00",
+             bookingDateTime: "2026-02-10 12:39:00 PM",
+             status: "waiting",
+             createdAt: current timestamp
+           }
+
+2. ADMIN PANEL DISPLAY LOGIC:
+
+   ACTIVE QUEUE:
+   - Filter: bookingDate equals selected date AND status in ["waiting", "called", "confirmed"]
+   - Sort: dailyQueueNumber ascending (1, 2, 3, 4...)
+   - Display: Show dailyQueueNumber as "#1", "#2", "#3"
+   
+   RECENT ACTIVITY:
+   - Filter: bookingDate equals selected date AND status equals "completed"
+   - Sort: updatedAt descending (latest finished first)
+   - Display: Show dailyQueueNumber (must show original number, NOT recalculated)
+
+3. BUTTON ACTIONS:
+
+   CALL NOW button:
+   - Update: status = "called", calledAt = current timestamp
+   - DO NOT modify: dailyQueueNumber
+   
+   CONFIRM button:
+   - Update: status = "confirmed", respondedAt = current timestamp
+   - DO NOT modify: dailyQueueNumber
+   
+   FINISH button:
+   - Update: status = "completed", updatedAt = current timestamp
+   - DO NOT modify: dailyQueueNumber
+   
+   CRITICAL RULE: dailyQueueNumber is PERMANENT and should NEVER be changed after creation
+
+4. DATE FILTER FUNCTIONALITY:
+   - When admin selects a date, filter all bookings by bookingDate field
+   - Each date has independent queue numbering starting from #1
+   - Example:
+     * 10 Feb 2026: #1, #2, #3, #4
+     * 11 Feb 2026: #1, #2, #3 (restarts from 1)
+
+5. CUSTOMER VIEW (Queue Card):
+   - Show: dailyQueueNumber from database
+   - Display as: "YOU ARE #4 IN LINE"
+   - This number never changes regardless of status
+
+
+DATABASE MIGRATION REQUIRED:
+
+For existing bookings in database:
+1. Add bookingDate field: extract date from createdAt (set time to 00:00:00)
+2. Add dailyQueueNumber field: recalculate based on createdAt timestamp per date
+3. Remove queueNumber field if exists
+4. Remove originalQueueNumber field if exists
+
+Migration Logic:
+- Group all bookings by date (from createdAt)
+- For each date group, sort by createdAt ascending
+- Assign dailyQueueNumber sequentially: 1, 2, 3, 4...
+
+
+TESTING SCENARIOS TO VERIFY:
+
+Scenario 1: New bookings on same day
+- Customer 1 books at 10:00 AM → gets #1
+- Customer 2 books at 11:00 AM → gets #2
+- Customer 3 books at 12:00 PM → gets #3
+✓ Expected: Queue numbers are 1, 2, 3
+
+Scenario 2: Finish button preserves queue number
+- Customer #2 is confirmed
+- Admin clicks Finish on customer #2
+- Customer #2 moves to Recent Activity
+✓ Expected: Still shows as #2 in Recent Activity
+
+Scenario 3: Out of order finishing
+- Customer #1 is waiting
+- Customer #2 is confirmed and finished first
+- Customer #3 is confirmed and finished second
+✓ Expected: Recent Activity shows #2 and #3 with their original numbers
+
+Scenario 4: Date filter
+- Select 10 Feb 2026
+✓ Expected: Only shows bookings from 10 Feb, queue numbers start from #1
+- Select 11 Feb 2026
+✓ Expected: Only shows bookings from 11 Feb, queue numbers start from #1 again
+
+
+IMPLEMENTATION CHECKLIST:
+
+Backend:
+□ Update Booking schema/model with correct fields
+□ Create migration script for existing data
+□ Update booking creation logic to assign dailyQueueNumber
+□ Ensure status update operations don't modify dailyQueueNumber
+□ Update all query filters to use bookingDate field
+
+Frontend:
+□ Display dailyQueueNumber in Active Queue
+□ Display dailyQueueNumber in Recent Activity
+□ Ensure date filter passes bookingDate to backend queries
+□ Update customer queue card to show dailyQueueNumber
+
+Please implement this complete restructuring and ensure the queue numbering system works correctly with daily resets and permanent queue numbers.

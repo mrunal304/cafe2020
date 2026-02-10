@@ -118,10 +118,10 @@ export default function QueueStatus() {
           <div className="text-center mb-6">
             <span className="text-[var(--text-dark)] font-bold text-xs block mb-1">Your queue number is</span>
             <h1 className="text-7xl font-black text-[var(--text-dark)] tracking-tighter leading-none">
-              # {queue.position || queue.queueNumber || 1}
+              # {queue.dailyQueueNumber}
             </h1>
             <div className="mt-2 text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-wider">
-              YOU ARE #{queue.position || queue.queueNumber || 1} IN LINE
+              YOU ARE #{queue.dailyQueueNumber} IN LINE
             </div>
           </div>
 
@@ -135,7 +135,7 @@ export default function QueueStatus() {
             <div className="bg-[var(--off-white)]/90 rounded-2xl p-4 shadow-sm border border-[var(--input-border)] flex flex-col items-center justify-center text-center min-h-[100px]">
               <span className="text-[var(--text-muted)] font-bold text-[11px] uppercase mb-1">Date & Time</span>
               <span className="text-[var(--terracotta)] text-sm font-black leading-tight">
-                {format(new Date(queue.createdAt!), 'dd MMM, hh:mm a')}
+                {format(new Date(queue.bookingDateTime!), 'dd MMM, hh:mm a')}
               </span>
             </div>
           </div>
