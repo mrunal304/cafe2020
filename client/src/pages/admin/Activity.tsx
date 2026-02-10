@@ -159,6 +159,7 @@ export default function AdminActivity() {
             <TableHeader>
               <TableRow className="bg-[#D4C4B0] hover:bg-[#D4C4B0] border-none">
                 <TableHead className="w-16 font-bold text-[#2C1810]">#</TableHead>
+                <TableHead className="font-bold text-[#2C1810]">Booking #</TableHead>
                 <TableHead className="font-bold text-[#2C1810]">Customer</TableHead>
                 <TableHead className="text-center font-bold text-[#2C1810]">Party Size</TableHead>
                 <TableHead className="font-bold text-[#2C1810]">Wait Time</TableHead>
@@ -186,6 +187,7 @@ export default function AdminActivity() {
                     className="h-20 hover:bg-[#F0E6D2] transition-colors border-b-[#E0E0E0]"
                   >
                     <TableCell className="font-bold text-lg text-[#2C1810]">#{entry.queueNumber}</TableCell>
+                    <TableCell className="font-bold text-xl text-orange-600">#{entry.dailySerialNumber}</TableCell>
                     <TableCell>
                       <div className="flex flex-col min-w-[150px]">
                         <div className="flex items-center gap-2">

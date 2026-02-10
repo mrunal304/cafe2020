@@ -1,0 +1,347 @@
+# Add Booking Number Column in Admin Panel Tables
+
+## Solution
+
+Add **Booking Number** column in both admin tables so staff can:
+1. Match customer's screen with admin panel
+2. Know who came first (lower booking number = earlier)
+3. Easily identify customers
+
+---
+
+## Changes Required
+
+### 1. Active Queue Table - Add Booking Number Column
+
+**Current columns:**
+```
+# | Customer | Party Size | Wait Time | Message | Date & Time | Status | Actions
+```
+
+**Add Booking Number column after # column:**
+```
+# | Booking # | Customer | Party Size | Wait Time | Message | Date & Time | Status | Actions
+```
+
+**Example data:**
+```
+# | Booking # | Customer | Party Size | Wait Time | Message | Date & Time | Status  | Actions
+#1| #62      | arjun    | 4         | WAITING   | None    | 10:13 PM    | WAITING | Call Now
+#2| #63      | sid      | 6         | WAITING   | None    | 10:22 PM    | WAITING | Call Now
+#3| #64      | alex     | 3         | WAITING   | None    | 11:11 PM    | WAITING | Call Now
+```
+
+### 2. Recent Activity Table - Add Booking Number Column
+
+**Current columns:**
+```
+# | Customer | Party Size | - | Message | Date & Time | Status | View
+```
+
+**Add Booking Number column after # column:**
+```
+# | Booking # | Customer | Party Size | - | Message | Date & Time | Status | View
+```
+
+**Example data:**
+```
+# | Booking # | Customer | Party Size | Message             | Date & Time | Status   | View
+#1| #58      | rohit    | 3         | Be there in 10 mins | 10:48 PM    | FINISHED | View
+#2| #59      | rashmi   | 5         | No special requests | 10:48 PM    | FINISHED | View
+#3| #60      | alia     | 4         | No special requests | 10:52 PM    | FINISHED | View
+#4| #61      | rashmi   | 3         | No special requests | 11:12 PM    | FINISHED | View
+```
+
+---
+
+## Code Implementation
+
+### Active Queue Component
+
+```jsx
+<table className="w-full border-collapse">
+  <thead>
+    <tr className="bg-stone-200">
+      <th className="px-3 py-3 text-left">#</th>
+      <th className="px-3 py-3 text-left">Booking #</th>  {/* NEW COLUMN */}
+      <th className="px-3 py-3 text-left">Customer</th>
+      <th className="px-3 py-3 text-center">Party Size</th>
+      <th className="px-3 py-3 text-center">Wait Time</th>
+      <th className="px-3 py-3 text-left">Message</th>
+      <th className="px-3 py-3 text-left">Date & Time</th>
+      <th className="px-3 py-3 text-center">Status</th>
+      <th className="px-3 py-3 text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {activeBookings.map((booking, index) => (
+      <tr key={booking.id} className="border-b hover:bg-stone-50">
+        
+        {/* Queue Position */}
+        <td className="px-3 py-4 font-bold text-lg">
+          #{index + 1}
+        </td>
+        
+        {/* NEW: Booking Number - Matches customer's screen */}
+        <td className="px-3 py-4">
+          <span className="font-bold text-lg text-orange-600">
+            #{booking.id}
+          </span>
+        </td>
+        
+        {/* Rest of columns stay the same */}
+        <td className="px-3 py-4">
+          <div>{booking.name}</div>
+          <div className="text-xs text-stone-500">{booking.mobile}</div>
+        </td>
+        
+        <td className="px-3 py-4 text-center">
+          <span className="flex items-center justify-center">
+            <svg className="w-4 h-4 mr-1">...</svg>
+            {booking.party_size}
+          </span>
+        </td>
+        
+        <td className="px-3 py-4 text-center text-stone-500">
+          {booking.wait_time || 'WAITING'}
+        </td>
+        
+        <td className="px-3 py-4 text-stone-600">
+          {booking.message || 'None'}
+        </td>
+        
+        <td className="px-3 py-4">
+          <div>{formatDate(booking.created_at)}</div>
+          <div className="text-xs text-stone-500">{formatTime(booking.created_at)}</div>
+        </td>
+        
+        <td className="px-3 py-4 text-center">
+          <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            {booking.status}
+          </span>
+        </td>
+        
+        <td className="px-3 py-4 text-center">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+            <svg className="w-4 h-4 inline mr-1">...</svg>
+            Call Now
+          </button>
+        </td>
+        
+      </tr>
+    ))}
+  </tbody>
+</table>
+```
+
+### Recent Activity Component
+
+```jsx
+<table className="w-full border-collapse">
+  <thead>
+    <tr className="bg-stone-200">
+      <th className="px-3 py-3 text-left">#</th>
+      <th className="px-3 py-3 text-left">Booking #</th>  {/* NEW COLUMN */}
+      <th className="px-3 py-3 text-left">Customer</th>
+      <th className="px-3 py-3 text-center">Party Size</th>
+      <th className="px-3 py-3 text-center">-</th>
+      <th className="px-3 py-3 text-left">Message</th>
+      <th className="px-3 py-3 text-left">Date & Time</th>
+      <th className="px-3 py-3 text-center">Status</th>
+      <th className="px-3 py-3 text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {recentBookings.map((booking, index) => (
+      <tr key={booking.id} className="border-b hover:bg-stone-50">
+        
+        {/* Serial Number */}
+        <td className="px-3 py-4 font-bold">
+          #{index + 1}
+        </td>
+        
+        {/* NEW: Booking Number - Matches customer's screen */}
+        <td className="px-3 py-4">
+          <span className="font-bold text-lg text-orange-600">
+            #{booking.id}
+          </span>
+        </td>
+        
+        {/* Rest of columns stay the same */}
+        <td className="px-3 py-4">
+          <div>{booking.name}</div>
+          <div className="text-xs text-stone-500">{booking.mobile}</div>
+        </td>
+        
+        <td className="px-3 py-4 text-center">
+          <span className="flex items-center justify-center">
+            <svg className="w-4 h-4 mr-1">...</svg>
+            {booking.party_size}
+          </span>
+        </td>
+        
+        <td className="px-3 py-4 text-center">-</td>
+        
+        <td className="px-3 py-4 text-stone-600">
+          {booking.message || 'No special requests'}
+        </td>
+        
+        <td className="px-3 py-4">
+          <div>{formatDate(booking.created_at)}</div>
+          <div className="text-xs text-stone-500">{formatTime(booking.created_at)}</div>
+        </td>
+        
+        <td className="px-3 py-4 text-center">
+          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            booking.status === 'FINISHED' ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'
+          }`}>
+            {booking.status}
+          </span>
+        </td>
+        
+        <td className="px-3 py-4 text-center">
+          <button className="text-blue-600 hover:text-blue-800 font-semibold">
+            View
+          </button>
+        </td>
+        
+      </tr>
+    ))}
+  </tbody>
+</table>
+```
+
+---
+
+## Column Styling - Make Booking Number Prominent
+
+```jsx
+{/* Booking Number - Orange color, bold, larger font */}
+<td className="px-3 py-4">
+  <span className="text-xl font-black text-orange-600">
+    #{booking.id}
+  </span>
+</td>
+```
+
+---
+
+## How It Works
+
+### Scenario: Customer Shows Screen at Counter
+
+**Customer's Screen (Image 1):**
+```
+BOOKING NUMBER
+     #62
+```
+
+**Staff Looks at Active Queue:**
+```
+# | Booking # | Customer | Party Size | Status
+#1| #62      | arjun    | 4         | WAITING  ← Match! This is arjun
+#2| #63      | sid      | 6         | WAITING
+#3| #64      | alex     | 3         | WAITING
+```
+
+**Staff knows:**
+- Customer showing #62 = arjun
+- He's 1st in queue (#1 position)
+- Party of 4 people
+- Status: WAITING
+
+---
+
+## Understanding Both Numbers
+
+### Column 1: # (Queue Position)
+- Shows order they came in
+- #1 = First customer
+- #2 = Second customer
+- #3 = Third customer
+- Helps staff know priority
+
+### Column 2: Booking # (Customer's Screen Number)
+- Matches what customer shows
+- Unique identifier
+- Used to find specific booking
+- Helps staff verify customer
+
+---
+
+## Complete Table Layout
+
+### Active Queue:
+```
+╔═══╦═══════════╦══════════╦════════════╦═══════════╦══════════╦══════════════╦═════════╦═════════╗
+║ # ║ Booking # ║ Customer ║ Party Size ║ Wait Time ║ Message  ║ Date & Time  ║ Status  ║ Actions ║
+╠═══╬═══════════╬══════════╬════════════╬═══════════╬══════════╬══════════════╬═════════╬═════════╣
+║#1 ║   #62    ║ arjun    ║     4      ║  WAITING  ║   None   ║ 10 Feb 10:13 ║ WAITING ║ Call Now║
+║#2 ║   #63    ║ sid      ║     6      ║  WAITING  ║   None   ║ 10 Feb 10:22 ║ WAITING ║ Call Now║
+║#3 ║   #64    ║ alex     ║     3      ║  WAITING  ║   None   ║ 10 Feb 11:11 ║ WAITING ║ Call Now║
+╚═══╩═══════════╩══════════╩════════════╩═══════════╩══════════╩══════════════╩═════════╩═════════╝
+```
+
+### Recent Activity:
+```
+╔═══╦═══════════╦══════════╦════════════╦═════════════════════╦══════════════╦══════════╦══════╗
+║ # ║ Booking # ║ Customer ║ Party Size ║ Message             ║ Date & Time  ║ Status   ║ View ║
+╠═══╬═══════════╬══════════╬════════════╬═════════════════════╬══════════════╬══════════╬══════╣
+║#1 ║   #58    ║ rohit    ║     3      ║ Be there in 10 mins ║ 10 Feb 10:48 ║ FINISHED ║ View ║
+║#2 ║   #59    ║ rashmi   ║     5      ║ No special requests ║ 10 Feb 10:48 ║ FINISHED ║ View ║
+║#3 ║   #60    ║ alia     ║     4      ║ No special requests ║ 10 Feb 10:52 ║ FINISHED ║ View ║
+║#4 ║   #61    ║ rashmi   ║     3      ║ No special requests ║ 10 Feb 11:12 ║ FINISHED ║ View ║
+╚═══╩═══════════╩══════════╩════════════╩═════════════════════╩══════════════╩══════════╩══════╝
+```
+
+---
+
+## Benefits
+
+### 1. Easy Matching
+- Customer shows: #62
+- Staff finds: Booking #62 in table
+- Instant identification
+
+### 2. Order Tracking
+- Lower booking number = Came earlier
+- #58 came before #62
+- #62 came before #64
+- Clear chronological order
+
+### 3. Multiple Information
+- **#** column = Current queue position
+- **Booking #** column = Customer's display number
+- Both useful for different purposes
+
+---
+
+## Testing Checklist
+
+- [ ] Add "Booking #" column header in Active Queue table ✓
+- [ ] Add "Booking #" column header in Recent Activity table ✓
+- [ ] Display `#{booking.id}` in booking number cells ✓
+- [ ] Style booking number (orange, bold, larger) ✓
+- [ ] Customer shows #62 → Staff finds it in Booking # column ✓
+- [ ] Lower booking numbers appear earlier in Recent Activity ✓
+- [ ] All other functionality unchanged ✓
+
+---
+
+## Summary
+
+**Add Booking Number column to:**
+1. Active Queue table (2nd column)
+2. Recent Activity table (2nd column)
+
+**Display:**
+- Format: #62, #63, #64, etc.
+- Source: `booking.id` (database ID)
+- Style: Orange color, bold, large font
+
+**Purpose:**
+- Match with customer's screen
+- Track chronological order
+- Easy customer identification
+
+**Keep everything else unchanged!**
