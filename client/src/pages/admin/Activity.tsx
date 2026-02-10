@@ -18,9 +18,17 @@ export default function AdminActivity() {
   const [, setLocation] = useLocation();
   const { data: user, isLoading: isUserLoading } = useUser();
   const [selectedDate, setSelectedDate] = useState(() => {
-    const now = new Date();
-    const istStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-    return new Date(istStr);
+    const getIndiaDate = () => {
+      const options = {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      };
+      return new Intl.DateTimeFormat('en-CA', options as any).format(new Date());
+    };
+    const indiaDateStr = getIndiaDate();
+    return new Date(indiaDateStr + 'T00:00:00');
   });
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
   const [searchTerm, setSearchTerm] = useState("");
@@ -102,9 +110,17 @@ export default function AdminActivity() {
             variant="outline" 
             size="sm"
             onClick={() => {
-              const now = new Date();
-              const istStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-              setSelectedDate(new Date(istStr));
+              const getIndiaDate = () => {
+                const options = {
+                  timeZone: 'Asia/Kolkata',
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                };
+                return new Intl.DateTimeFormat('en-CA', options as any).format(new Date());
+              };
+              const indiaDateStr = getIndiaDate();
+              setSelectedDate(new Date(indiaDateStr + 'T00:00:00'));
             }}
             className="flex-1 md:flex-none bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
           >
@@ -114,9 +130,17 @@ export default function AdminActivity() {
             variant="outline" 
             size="sm"
             onClick={() => {
-              const now = new Date();
-              const istStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
-              const today = new Date(istStr);
+              const getIndiaDate = () => {
+                const options = {
+                  timeZone: 'Asia/Kolkata',
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                };
+                return new Intl.DateTimeFormat('en-CA', options as any).format(new Date());
+              };
+              const indiaDateStr = getIndiaDate();
+              const today = new Date(indiaDateStr + 'T00:00:00');
               today.setDate(today.getDate() - 1);
               setSelectedDate(today);
             }}
