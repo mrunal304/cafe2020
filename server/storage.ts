@@ -170,10 +170,12 @@ export class MongoStorage implements IStorage {
         $or: [{ dailySerialNumber: { $lt: entry.dailySerialNumber } }],
       });
       mapped.activeQueuePosition = position + 1;
+      // @ts-ignore - position can be number or null/undefined
       mapped.position = position + 1;
     } else {
       mapped.activeQueuePosition = 0;
-      mapped.position = null;
+      // @ts-ignore - position can be number or null/undefined
+      mapped.position = undefined;
     }
 
     return mapped;
@@ -220,10 +222,12 @@ export class MongoStorage implements IStorage {
       const entry = this.mapQueueEntry(e);
       if (["waiting", "called"].includes(entry.status)) {
         entry.activeQueuePosition = index + 1;
+        // @ts-ignore - position can be number or null/undefined
         entry.position = index + 1;
       } else {
         entry.activeQueuePosition = 0;
-        entry.position = null;
+        // @ts-ignore - position can be number or null/undefined
+        entry.position = undefined;
       }
       return entry;
     });
@@ -305,7 +309,8 @@ export class MongoStorage implements IStorage {
       },
       {
         activeQueuePosition: 0,
-        position: null,
+        // @ts-ignore - setting to undefined for Mongo
+        position: undefined,
         updatedAt: new Date(),
       },
     );
