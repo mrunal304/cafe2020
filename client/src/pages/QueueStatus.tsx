@@ -112,13 +112,16 @@ export default function QueueStatus() {
 
           {/* Queue Info */}
           <div className="text-center mb-6">
-            <span className="text-[var(--text-dark)] font-bold text-xs block mb-1">Your queue number is</span>
+            <span className="text-[var(--text-dark)] font-bold text-xs block mb-1">Your position in line</span>
             <h1 className="text-7xl font-black text-[var(--text-dark)] tracking-tighter leading-none">
-              # {queue.dailySerialNumber}
+              # {queue.position ?? queue.activeQueuePosition}
             </h1>
             <div className="mt-2 text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-wider">
-              YOU ARE #{queue.activeQueuePosition} IN LINE
+              YOU ARE #{queue.position ?? queue.activeQueuePosition} IN LINE
             </div>
+            <p className="mt-2 text-[var(--text-muted)] text-[10px] font-bold uppercase">
+              Booking Reference: #{queue.dailySerialNumber}
+            </p>
           </div>
 
           {/* Side-by-Side Cards */}
