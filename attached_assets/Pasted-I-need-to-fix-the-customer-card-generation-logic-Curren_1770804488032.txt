@@ -1,0 +1,42 @@
+I need to fix the customer card generation logic. Currently, multiple cards are being created for the same customer.
+
+IMPORTANT CLARIFICATION:
+- Cards = Customer loyalty/membership cards (one per unique customer, permanent)
+- Bookings = Individual restaurant visits/reservations (multiple allowed per customer)
+
+Requirements:
+1. Each unique customer should have only ONE card (identified by phone number)
+2. A customer can have MULTIPLE bookings (same phone number can make multiple reservations on different dates/times)
+3. All bookings from the same phone number should be linked to the same customer card
+4. Before implementing this fix, delete the existing cards collection and regenerate with the new logic
+5. CRITICAL: All existing functionality and working must remain completely intact and unaffected
+
+Please implement:
+1. Add a check before creating a new card: 
+   - Check if a card with this phone number already exists
+   - If YES: Link the new booking to the existing card (don't create a new card)
+   - If NO: Create a new card and link the booking to it
+
+2. Delete the current cards collection
+
+3. On project rerun, ensure:
+   - Only unique customer cards are created (one card per phone number)
+   - Multiple bookings from the same phone number are all linked to the same card
+   - All bookings functionality remains intact
+
+4. MUST PRESERVE - Do NOT break any existing features:
+   - Booking creation and management should work exactly as before
+   - Queue management system should work normally
+   - Recent activity display should work normally
+   - Customer data retrieval should work normally
+   - All Admin panel features should remain unchanged
+   - Any existing APIs or endpoints should continue to work
+   - Database relationships and queries should remain functional
+   - UI/UX behavior should stay the same
+
+5. Testing requirements:
+   - Verify that customers can still make new bookings
+   - Verify that all existing features work after the fix
+   - Ensure no errors are introduced in any part of the application
+
+The fix should ONLY prevent duplicate customer cards, nothing else should change. Same customer should be able to make unlimited bookings with one card, and all other application functionality must work exactly as it does now.

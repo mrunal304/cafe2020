@@ -17,6 +17,23 @@ const UserSchema: Schema = new Schema({
 
 export const MongoUser = mongoose.model<IUser>("User", UserSchema);
 
+// === CUSTOMER CARD SCHEMA ===
+export interface ICustomerCard extends Document {
+  phoneNumber: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const CustomerCardSchema: Schema = new Schema({
+  phoneNumber: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+}, { timestamps: true });
+
+export const MongoCustomerCard = mongoose.model<ICustomerCard>("CustomerCard", CustomerCardSchema);
+
 // === QUEUE ENTRY SCHEMA ===
 export interface IQueueEntry extends Document {
   name: string;
@@ -36,6 +53,7 @@ export interface IQueueEntry extends Document {
   responseType?: 'accepted' | 'cancelled' | 'expired';
   message?: string;
   position?: number;
+  customerCardId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,6 +88,7 @@ const QueueEntrySchema: Schema = new Schema({
   },
   message: { type: String },
   position: { type: Number },
+  customerCardId: { type: Schema.Types.ObjectId, ref: 'CustomerCard' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 }, { timestamps: true });

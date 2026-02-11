@@ -3,6 +3,7 @@ import {
   MongoUser,
   MongoQueueEntry,
   MongoNotification,
+  MongoCustomerCard,
   type IUser,
   type IQueueEntry,
   type INotification,
@@ -143,6 +144,15 @@ export class MongoStorage implements IStorage {
     });
     const activeQueuePosition = activeTodayBookings + 1;
 
+    // Handle Customer Card Logic
+    let customerCard = await MongoCustomerCard.findOne({ phoneNumber: entry.phoneNumber });
+    if (!customerCard) {
+      customerCard = await MongoCustomerCard.create({
+        phoneNumber: entry.phoneNumber,
+        name: entry.name || "Guest",
+      });
+    }
+
     const newEntryDoc = await MongoQueueEntry.create({
       ...entry,
       name: entry.name || undefined,
@@ -152,6 +162,7 @@ export class MongoStorage implements IStorage {
       bookingDateTime: now,
       status: "waiting",
       position: activeQueuePosition,
+      customerCardId: customerCard._id,
       updatedAt: now,
     });
 

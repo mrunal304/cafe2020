@@ -64,6 +64,15 @@ app.use((req, res, next) => {
   // Connect to MongoDB
   await connectMongoDB();
 
+  // Clear existing customer cards as requested for regeneration
+  try {
+    const { MongoCustomerCard } = await import("@shared/mongo-schema");
+    await MongoCustomerCard.deleteMany({});
+    console.log("Cleared existing customer cards for regeneration");
+  } catch (err) {
+    console.error("Error clearing customer cards:", err);
+  }
+
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
