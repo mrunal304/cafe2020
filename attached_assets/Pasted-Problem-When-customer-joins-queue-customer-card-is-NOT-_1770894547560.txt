@@ -1,0 +1,97 @@
+Problem: When customer joins queue, customer card is NOT being created or updated. Only queue entry is created.
+Fix needed in queue join endpoint (where POST /api/queue or booking happens):
+
+STATEMENT 1: Customer Card Creation Logic
+Current behavior: Code creates queue entry but skips customer card creation/update
+Required behavior: Before creating queue entry, ALWAYS handle customer card first
+Implementation needed:
+
+Find or create customer card FIRST (before queue entry)
+
+Search customercards collection by phoneNumber
+If NOT found → create NEW card with all fields (totalVisits: 0, visits: [], firstVisitDate, lastVisitDate, email: null)
+If found → use existing card
+
+
+Calculate visitNumber from customer card
+
+If new customer → visitNumber = 1
+If returning → visitNumber = customerCard.totalVisits + 1
+
+
+Create queue entry with customerCardId AND visitNumber
+Update customer card AFTER queue entry created:
+
+Increment totalVisits by 1
+Push new queue entry _id to visits array
+Update lastVisitDate to current date
+Update name (in case changed)
+
+
+
+
+STATEMENT 2: Missing Fields in Customer Card
+Problem: Customer cards being created with only 6 fields (_id, phoneNumber, name, createdAt, updatedAt, __v)
+Solution: When creating NEW customer card, include these fields:
+phoneNumber (string)
+name (string)
+email (null)
+totalVisits (number, start at 0)
+visits (array, start empty [])
+firstVisitDate (Date)
+lastVisitDate (Date)
+createdAt (Date)
+updatedAt (Date)
+When updating existing customer card after new booking:
+
+totalVisits → increment by 1
+visits → add new queue entry ID to array
+lastVisitDate → update to now
+name → update (may have changed)
+updatedAt → update to now
+
+
+STATEMENT 3: Critical Flow
+The complete workflow must be:
+Step 1: Customer submits booking
+↓
+Step 2: Find customer card by phoneNumber
+↓
+Step 3a: If NOT found → Create NEW card (totalVisits=0, visits=[])
+Step 3b: If found → Calculate visitNumber = totalVisits + 1
+↓
+Step 4: Create queue entry with customerCardId and visitNumber
+↓
+Step 5: Update customer card (totalVisits +1, push visit ID, update dates)
+↓
+Step 6: Return response
+Currently missing: Steps 3a, 3b, and 5 are NOT happening
+
+STATEMENT 4: Database Operations Needed
+In queue join endpoint, add these database operations:
+Operation 1 - Find/Create Customer Card:
+
+Collection: customercards
+Operation: findOne by phoneNumber, if null then insertOne
+Fields for NEW card: phoneNumber, name, email (null), totalVisits (0), visits ([]), firstVisitDate, lastVisitDate, createdAt, updatedAt
+
+Operation 2 - Create Queue Entry:
+
+Collection: queueentries
+Include fields: customerCardId (ObjectId from step 1), visitNumber (calculated from totalVisits + 1)
+
+Operation 3 - Update Customer Card:
+
+Collection: customercards
+Operation: updateOne
+Updates: $inc totalVisits by 1, $push new queue entry ID to visits array, $set lastVisitDate and updatedAt
+
+
+STATEMENT 5: Verification
+After fixing, verify:
+
+Every new booking creates/updates customer card
+Customer card has 9-10 fields (not just 6)
+totalVisits increments correctly
+visits array contains all queue entry IDs
+visitNumber in queue entry matches customer's visit count
