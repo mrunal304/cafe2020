@@ -1,0 +1,101 @@
+Fix the incomplete customer card system in my queue management application.
+
+CURRENT PROBLEM:
+- Customer cards exist but are missing critical fields
+- Current customer card structure has only: _id, phoneNumber, name, createdAt, updatedAt, __v
+- Missing fields: totalVisits, visits (array), firstVisitDate, lastVisitDate, email
+- queueentries already has customerCardId and visitNumber (working)
+
+WHAT NEEDS TO BE FIXED:
+
+1. UPDATE QUEUE JOIN LOGIC:
+
+When creating NEW customer card, include ALL fields:
+```javascript
+const customerCard = await db.collection('customercards').insertOne({
+  phoneNumber: phoneNumber,
+  name: name,
+  email: null,
+  totalVisits: 0,
+  visits: [],
+  firstVisitDate: new Date(),
+  lastVisitDate: new Date(),
+  createdAt: new Date(),
+  updatedAt: new Date()
+});
+```
+
+After creating queue entry, UPDATE customer card:
+```javascript
+// After queue entry is created
+await db.collection('customercards').updateOne(
+  { _id: customerCard._id },
+  {
+    $inc: { totalVisits: 1 },
+    $push: { visits: queueEntry.insertedId },
+    $set: {
+      lastVisitDate: new Date(),
+      updatedAt: new Date()
+    }
+  }
+);
+```
+
+For RETURNING customers:
+```javascript
+// Calculate visitNumber from existing totalVisits
+const visitNumber = customerCard.totalVisits + 1;
+
+// Create queue entry
+// Then update customer card (same as above)
+```
+
+2. CREATE MIGRATION SCRIPT:
+
+Create file: server/scripts/fixCustomerCards.js
+
+This script should:
+- Connect to MongoDB using connection string from environment or config
+- Get all customer cards
+- For each customer card:
+  * Find all queueentries with that customerCardId
+  * Count total visits
+  * Create visits array with all queue entry IDs
+  * Get first and last visit dates
+  * Update customer card with these fields:
+    - email: null
+    - totalVisits: (count)
+    - visits: (array of IDs)
+    - firstVisitDate: (oldest visit date)
+    - lastVisitDate: (newest visit date)
+- Log progress for each customer
+
+3. CREATE CUSTOMER API ENDPOINTS:
+
+Create file: server/routes/customers.js
+
+Endpoints needed:
+
+GET /api/customers/:phoneNumber
+- Find customer card by phoneNumber
+- Get all queueentries for this customer (sorted by date, newest first)
+- Return: { success, customer, visits, totalVisits }
+
+GET /api/customers
+- Get all customer cards sorted by totalVisits descending
+- Return: { success, customers, count }
+
+Register routes in main server file:
+```javascript
+const customerRoutes = require('./routes/customers');
+app.use('/api/customers', customerRoutes);
+```
+
+VERIFICATION:
+After implementation:
+- Customer cards should have 10+ fields (not just 6)
+- New bookings should update totalVisits and visits array
+- Migration script should fix all existing customer cards
+- API endpoints should return customer history
+
+Please implement these fixes to complete the customer card system.

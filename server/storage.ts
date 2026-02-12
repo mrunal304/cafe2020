@@ -152,10 +152,13 @@ export class MongoStorage implements IStorage {
       customerCard = await MongoCustomerCard.create({
         phoneNumber: entry.phoneNumber,
         name: entry.name || "Guest",
+        email: null,
         totalVisits: 0,
+        visits: [],
         firstVisitDate: now,
         lastVisitDate: now,
-        visits: [],
+        createdAt: now,
+        updatedAt: now,
       });
     } else {
       visitNumber = customerCard.totalVisits + 1;
@@ -172,6 +175,7 @@ export class MongoStorage implements IStorage {
       position: activeQueuePosition,
       customerCardId: customerCard._id,
       visitNumber,
+      createdAt: now,
       updatedAt: now,
     });
 
