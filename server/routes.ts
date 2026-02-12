@@ -336,7 +336,7 @@ export async function registerRoutes(
   });
 
   // CANCEL BOOKING (ADMIN SIDE)
-  app.post(api.admin.bookings.cancel.path, async (req, res) => {
+  app.post("/api/admin/bookings/cancel", async (req, res) => {
     const { bookingId } = req.body;
     const entry = await storage.getQueueEntry(bookingId);
     if (!entry) return res.status(404).json({ message: "Not found" });
@@ -360,7 +360,7 @@ export async function registerRoutes(
   app.get("/api/customers/:phoneNumber", async (req, res) => {
     try {
       const { phoneNumber } = req.params;
-      const { MongoCustomerCard, MongoQueueEntry } = await import("../shared/mongo-schema.js");
+      const { MongoCustomerCard, MongoQueueEntry } = await import("../shared/mongo-schema");
 
       const customer = await MongoCustomerCard.findOne({ phoneNumber });
       if (!customer) {
@@ -383,7 +383,7 @@ export async function registerRoutes(
 
   app.get("/api/customers", async (req, res) => {
     try {
-      const { MongoCustomerCard } = await import("../shared/mongo-schema.js");
+      const { MongoCustomerCard } = await import("../shared/mongo-schema");
       const customers = await MongoCustomerCard.find({}).sort({ totalVisits: -1 });
       res.json({ success: true, customers, count: customers.length });
     } catch (err: any) {

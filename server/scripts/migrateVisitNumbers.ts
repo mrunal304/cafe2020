@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MongoCustomerCard, MongoQueueEntry } from '../shared/mongo-schema.js';
+import { MongoCustomerCard, MongoQueueEntry } from '../../shared/mongo-schema.js';
 
 const MONGO_URI = process.env.MONGODB_URI;
 
